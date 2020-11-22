@@ -48,6 +48,14 @@
               :hi-players ["Alice L"]
               :players ["Eva M"]}])
 
+(defcard-rg game-card-no-notes-players
+            "### Game with no notes or players"
+            [game
+             {:name "Super Smash Bros. 64"
+              :notes ""
+              :hi-players []
+              :players []}])
+
 
 (defcard
   "You can also add tests here and see their results.

@@ -15,7 +15,7 @@
             [:div.mid
              [:span (if (empty? notes) "(No notes entered)" notes)]]
             [:div.body
-             (map #(vector :span %) players)]]))
+             (map #(vector :p %) players)]]))
 
 (defn game [g]
       (let [{:keys [name notes hi-players players]} g]
