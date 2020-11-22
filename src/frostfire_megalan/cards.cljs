@@ -1,4 +1,4 @@
-(ns app.cards
+(ns frostfire-megalan.cards
   "This namespace contains devcards and tests, and is the entrypoint for 
   both 'yarn cards' and 'yarn test'."
   (:require [cljsjs.react]
@@ -8,7 +8,7 @@
             [devcards.core :refer [start-devcard-ui!]]
             ["jsdom-global" :as jsdom-global]
             ; Import all namespaces with cards here to load them.
-            [app.hello-cards]))
+            [frostfire-megalan.main-cards]))
 
 ; Set jsdom to mock a dom environment for node testing.
 (jsdom-global)

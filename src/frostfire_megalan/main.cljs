@@ -7,19 +7,25 @@
 
 ; helpers
 (defn lobby [l]
-      (let [{:keys [game players]} l]
+      (let [{:keys [game notes players]} l]
            [:div.lobby
             [:div.head
              [:h3 game]]
+            [:div.mid
+             [:p notes]]
             [:div.body
              (map #(vector :p %) players)]]))
 
 (defn game [g]
-      (let [{:keys [name]} g]
+      (let [{:keys [name notes hi-players players]} g]
            [:div.game
             [:div.head
              [:h3 name]]
-            [:div.body]]))
+            [:div.mid
+             [:p notes]]
+            [:div.body
+             (map #(vector :p %) hi-players)
+             (map #(vector :p %) players)]]))
 
 ; core
 (defn header []

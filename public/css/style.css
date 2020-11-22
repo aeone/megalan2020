@@ -6,6 +6,19 @@ body {
     font-family: 'Oxygen', sans-serif;
 }
 
+.using-devcards .com-rigsomelight-devcards-card-base-no-pad {
+    background-color: #111;
+    border-color: #222;
+}
+
+.using-devcards .com-rigsomelight-devcards-card-base {
+    background-color: #222;
+}
+
+.using-devcards .com-rigsomelight-devcards-panel-heading {
+    background-color: #222;
+}
+
 .heading {
     padding: 1rem;
 }
@@ -22,7 +35,7 @@ body {
 }
 
 .lobby .head {
-    background-color: #333;
+    background-color: #444;
     padding: 1rem;
 }
 
@@ -30,7 +43,17 @@ body {
     padding: 1rem;
 }
 
+.lobby .mid {
+    background-color: #333;
+    padding: 1rem;
+}
+
 .game .head {
+    background-color: #444;
+    padding: 1rem;
+}
+
+.game .mid {
     background-color: #333;
     padding: 1rem;
 }
