@@ -1,7 +1,8 @@
 (ns frostfire-megalan.main
   (:require [reagent.core :as r]
             [reagent.ratom :as ratom]
-            [frostfire-megalan.state :as s]))
+            [frostfire-megalan.state :as s]
+            ["react-markdown" :as ReactMarkdown]))
 
 (defonce state (r/atom (s/initial-state)))
 
@@ -22,7 +23,8 @@
             [:div.head
              [:h3 name]]
             [:div.mid
-             [:p notes]]
+             [:p
+              [:> ReactMarkdown {:source notes}]]]
             [:div.body
              (map #(vector :p %) hi-players)
              (map #(vector :p %) players)]]))

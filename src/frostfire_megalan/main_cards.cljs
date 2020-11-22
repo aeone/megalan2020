@@ -40,10 +40,11 @@
             "### Game with notes and players"
             [game
              {:name "Super Smash Bros. Ultimate"
-              :notes "Requires: Nintendo Switch & Nintendo Switch Online.
-                      Players: 2-8.
-                      Best with: 2, 4, 6.
-                      Platform fighting game with all the best characters in it."
+              :notes "
+- Requires: Nintendo Switch & Nintendo Switch Online.
+- Players: **2-8**
+- Best with: 2, 4, 6.
+- Platform fighting game with all the best characters in it."
               :hi-players ["Alice L"]
               :players ["Eva M"]}])
 
