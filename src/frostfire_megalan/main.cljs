@@ -17,7 +17,7 @@
             [:div.mid
              [:span (if (empty? notes) "(No notes entered)" notes)]]
             [:div.body
-             (map #(vector :p {:key %} %) players)]]))
+             (map #(vector :p {:key (:id %)} (:name %)) players)]]))
 
 (defn game [g]
       (let [{:keys [id name notes hi-players players]} g]
@@ -28,8 +28,8 @@
             [:div.mid
              [:> ReactMarkdown {:source notes}]]
             [:div.body
-             (map #(vector :p {:key %} %) hi-players)
-             (map #(vector :p {:key %} %) players)]]))
+             (map #(vector :p {:key (:id %)} (:name %)) hi-players)
+             (map #(vector :p {:key (:id %)} (:name %)) players)]]))
 
 ; core
 (defn header []

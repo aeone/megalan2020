@@ -3,7 +3,7 @@
   (:require [reagent.core :as r]
             [frostfire-megalan.hello :refer [hello]]
             [frostfire-megalan.main :refer [container]]
-            [frostfire-megalan.state :refer [initialise-firebase]]))
+            ))
 
 (defn ^:dev/after-load render
       "Render the toplevel component for this app."
@@ -13,5 +13,4 @@
 (defn ^:export main
       "Run application startup logic."
       []
-      (initialise-firebase)
       (render))
