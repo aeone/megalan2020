@@ -3,7 +3,9 @@
             [devcards.core :as dc :refer [defcard deftest]]
             [cljs.test :include-macros true :refer [is]]
             ["@testing-library/react" :refer [render cleanup fireEvent]]
-            [frostfire-megalan.main :refer [lobby game]])
+            [frostfire-megalan.main :refer [
+                                            lobby
+                                            game]])
   (:require-macros [devcards.core :as dc
                     :refer [defcard defcard-rg]]))
 
@@ -21,7 +23,7 @@
   "This is a live interactive development environment using [Devcards](https://github.com/bhauman/devcards).")
 
 (defcard-rg lobby-card-notes-players
-         "### Lobby with notes and players"
+            "### Lobby with notes and players"
             [lobby
              {:game    "Test Game"
               :notes   "I have some notes"
@@ -33,6 +35,17 @@
              {:game    "Test Game"
               :notes   ""
               :players []}])
+
+(defcard-rg game-card-notes-players
+            "### Game with notes and players"
+            [game
+             {:name "Super Smash Bros. Ultimate"
+              :notes "Requires: Nintendo Switch & Nintendo Switch Online.
+                      Players: 2-8.
+                      Best with: 2, 4, 6.
+                      Platform fighting game with all the best characters in it."
+              :hi-players ["Alice L"]
+              :players ["Eva M"]}])
 
 
 (defcard

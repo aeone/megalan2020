@@ -6,19 +6,6 @@ body {
     font-family: 'Oxygen', sans-serif;
 }
 
-.using-devcards .com-rigsomelight-devcards-card-base-no-pad {
-    background-color: #111;
-    border-color: #222;
-}
-
-.using-devcards .com-rigsomelight-devcards-card-base {
-    background-color: #222;
-}
-
-.using-devcards .com-rigsomelight-devcards-panel-heading {
-    background-color: #222;
-}
-
 .heading {
     padding: 1rem;
 }
@@ -27,6 +14,11 @@ body {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+}
+
+.head h3 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .lobby, .game {
@@ -60,4 +52,20 @@ body {
 
 .game .body {
     padding: 1rem;
+}
+
+
+/* Devcards */
+
+.using-devcards .com-rigsomelight-devcards-card-base-no-pad {
+    background-color: #111;
+    border-color: #222;
+}
+
+.using-devcards .com-rigsomelight-devcards-card-base {
+    background-color: #222;
+}
+
+.using-devcards .com-rigsomelight-devcards-panel-heading {
+    background-color: #222;
 }
