@@ -1,4 +1,4 @@
-(ns app.hello
+(ns frostfire-megalan.hello
   (:require [reagent.core :as r]))
 
 (defn click-counter [click-count]

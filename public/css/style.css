@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxygen:wght@300;700&display=swap');
+
+body {
+    background-color: #111;
+    color: #cde;
+    font-family: 'Oxygen', sans-serif;
+}
+
+.heading {
+    padding: 1rem;
+}
+
+.lobbies > .body, .games > .body {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.lobby, .game {
+    background-color: #222;
+    margin: 0.5rem;
+}
+
+.lobby .head {
+    background-color: #333;
+    padding: 1rem;
+}
+
+.lobby .body {
+    padding: 1rem;
+}
+
+.game .head {
+    background-color: #333;
+    padding: 1rem;
+}
+
+.game .body {
+    padding: 1rem;
+}

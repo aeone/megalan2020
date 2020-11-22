@@ -1,14 +1,14 @@
 {:builds
  {:app {:asset-path "/js"
-        :modules {:main {:init-fn app.core/main}}
+        :modules {:main {:init-fn frostfire_megalan.core/main}}
         :output-dir "public/js"
         :target :browser}
   :cards {:asset-path "/js"
-          :modules {:main {:init-fn app.cards/main}}
+          :modules {:main {:init-fn frostfire_megalan.cards/main}}
           :compiler-options {:devcards true}
           :output-dir "public/js"
           :target :browser}
-  :test {:ns-regexp "app.cards"
+  :test {:ns-regexp "frostfire_megalan.cards"
          :output-to "out/test.js"
          :target :node-test}
   :e2e {:ns-regexp "e2e.*"
