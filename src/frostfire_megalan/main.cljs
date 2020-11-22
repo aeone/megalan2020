@@ -8,26 +8,28 @@
 
 ; helpers
 (defn lobby [l]
-      (let [{:keys [game notes players]} l]
+      (let [{:keys [id game notes players]} l]
+           ^{:key id}
            [:div.lobby
             [:div.head
-             [:h3 game]]
+             [:h3 game]
+             [:i.fal.fa-times.fa-lg]]
             [:div.mid
              [:span (if (empty? notes) "(No notes entered)" notes)]]
             [:div.body
-             (map #(vector :p %) players)]]))
+             (map #(vector :p {:key %} %) players)]]))
 
 (defn game [g]
-      (let [{:keys [name notes hi-players players]} g]
+      (let [{:keys [id name notes hi-players players]} g]
+           ^{:key id}
            [:div.game
             [:div.head
              [:h3 name]]
             [:div.mid
-             [:p
-              [:> ReactMarkdown {:source notes}]]]
+             [:> ReactMarkdown {:source notes}]]
             [:div.body
-             (map #(vector :p %) hi-players)
-             (map #(vector :p %) players)]]))
+             (map #(vector :p {:key %} %) hi-players)
+             (map #(vector :p {:key %} %) players)]]))
 
 ; core
 (defn header []
@@ -49,6 +51,6 @@
 
 (defn container []
       [:<>
-       (header)
-       (lobbies)
-       (games)])
+       [header]
+       [lobbies]
+       [games]])

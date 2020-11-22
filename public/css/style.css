@@ -6,6 +6,16 @@ body {
     font-family: 'Oxygen', sans-serif;
 }
 
+h3 {
+    display: inline;
+}
+
+.fal {
+    /*
+    vertical-align: middle;
+    */
+}
+
 .heading {
     padding: 1rem;
 }
@@ -14,6 +24,19 @@ body {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+}
+
+.head {
+
+    display: flex;
+    justify-content: space-between;
+
+    align-items: center;
+    /*
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    */
 }
 
 .head h3 {
