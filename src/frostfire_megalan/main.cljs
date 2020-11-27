@@ -1,10 +1,8 @@
 (ns frostfire-megalan.main
   (:require [reagent.core :as r]
             [reagent.ratom :as ratom]
-            [frostfire-megalan.state :as s]
+            [frostfire-megalan.state :refer [state]]
             ["react-markdown" :as ReactMarkdown]))
-
-(defonce state (r/atom (s/initial-state)))
 
 ; helpers
 (defn lobby [l]

@@ -3,6 +3,7 @@
   (:require [reagent.core :as r]
             [frostfire-megalan.hello :refer [hello]]
             [frostfire-megalan.main :refer [container]]
+            [frostfire-megalan.fb-init :as fb-init]
             ))
 
 (defn ^:dev/after-load render
