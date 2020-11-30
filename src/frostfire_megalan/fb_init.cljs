@@ -14,18 +14,38 @@
       [path]
       (.ref (.database firebase) (clojure.string.join "/" path)))
 
+;(defn root-ref []
+;      (-> firebase
+;          (.database)
+;          (.ref)))
+
 (defn save!
       [path value]
-      (.set (db-ref path) value))
+      (let [path (clj->js path)
+            value (clj->js value)]
+           (.set (db-ref path) value)))
+
+(defn remove!
+      [path]
+      (let [path (clj->js path)]
+           (.remove (db-ref path))))
+
+;(defn save-at-root! [value]
+;      (let [root-ref (.ref (.database firebase))
+;            value (clj->js value)]
+;           (js/console.log "Writing new value")
+;           (js/console.log value)
+;           (.set root-ref value)))
 
 (defn db-subscribe
       [path]
-      (.on (db-ref path)
-           "value"
-           (fn [snapshot]
-               (put! from-fb (js->clj (.val snapshot) :keywordize-keys true))
-               ;(reset! state/counter (js->clj (.val snapshot) :keywordize-keys true))
-               )))
+      (let [path (clj->js path)]
+           (.on (db-ref path)
+                "value"
+                (fn [snapshot]
+                    (put! from-fb (js->clj (.val snapshot) :keywordize-keys true))
+                    ;(reset! state/counter (js->clj (.val snapshot) :keywordize-keys true))
+                    ))))
 
 (defn firebase-init
       []
@@ -34,7 +54,7 @@
              :authDomain  "megalan-dabm.firebaseapp.com"
              :databaseURL "https://megalan-dabm.firebaseio.com"
              :projectId   "megalan-dabm"})
-      (db-subscribe [])
+      ;(db-subscribe [])
       ;(reset! database (.database firebase))
       )
 
@@ -44,6 +64,10 @@
 ;(defonce temp-state (atom nil))
 
 (go-loop []
-         (let [[path value] (<! to-fb)]
-              (save! path value)
+         (let [[path value :as msg] (<! to-fb)]
+              (js/console.log "Msg from to-fb channel:")
+              (js/console.log msg)
+              (if value
+                (save! path value)
+                (remove! path))
               (recur)))

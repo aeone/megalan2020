@@ -14,4 +14,5 @@
 (defn ^:export main
       "Run application startup logic."
       []
+      (fb-init/firebase-init)
       (render))
