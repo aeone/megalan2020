@@ -2,14 +2,13 @@
   (:require [clojure.core.async :refer [put!]]
             [reagent.core :as r]
             [reagent.ratom :as ratom]
-            [frostfire-megalan.state
-              :as state
-              :refer [state internal-state state-update-chan]]
+            [frostfire-megalan.state :as state :refer [state-update-chan]]
             ["react-markdown" :as ReactMarkdown]))
 
 ; helpers
-(defn lobby [l]
+(defn lobby [l all-players]
       (let [{:keys [id game notes players]} l
+            players (filter #((set (keys players)) (:id %)) all-players)
             p-msg (if (empty? players) "no players" (clojure.string.join ", " (map :name players)))
             confirm-msg (str "Do you want to delete the lobby for " game " containing " p-msg "?")
             listener #(when-let [_ (js/confirm confirm-msg)]
@@ -28,8 +27,10 @@
                "(No players in lobby)"
                (map #(vector :p {:key (:id %)} (:name %)) players))]]))
 
-(defn game [g]
+(defn game [g all-players]
       (let [{:keys [id name notes hi-players players]} g
+            hi-players (filter #((set (keys hi-players)) (:id %)) all-players)
+            players (filter #((set (keys players)) (:id %)) all-players)
             listener #(when-let
                         [_ (js/confirm
                              (str "Do you want to create a lobby for " name "?"))]
@@ -37,7 +38,7 @@
                         (let [uuid (str (random-uuid))]
                              (put! state-update-chan
                                    [[:lobbies uuid]
-                                    (state/lobby uuid name "" [])])))]
+                                    (state/lobby uuid name "" {})])))]
            ^{:key id}
            [:div.game
             [:div.head
@@ -56,25 +57,28 @@
 (defn header []
       [:div.heading [:h1 "MegaLAN"]])
 
-(defn lobbies []
+(defn lobbies [ls all-players]
       [:div.lobbies
        [:div.heading
         [:h2 "Open game lobbies"]]
        [:div.body
-        (map lobby (vals (:lobbies @state)))]])
+        (map #(lobby % all-players) ls)]])
 
-(defn games []
+(defn games [gs all-players]
       [:div.games
        [:div.heading
         [:h2 "Game list"]]
        [:div.body
-        (map game (vals (:games @state)))]])
+        (map #(game % all-players) gs)]])
 
-(defn container []
-      [:<>
-       [header]
-       [lobbies]
-       [games]])
+(defn container [state internal-state]
+      (let [all-players (vals (:players @state))
+            ls (vals (:lobbies @state))
+            gs (vals (:games @state))]
+           [:<>
+            [header]
+            [lobbies ls all-players]
+            [games gs all-players]]))
 
 ; modals
 (defn create-game []
