@@ -55,7 +55,7 @@
 
 ; core
 (defn header []
-      [:div.heading [:h1 "MegaLAN"]])
+      [:div.heading [:h1.mega "Mega"] [:h1.lan "LAN"]])
 
 (defn lobbies [ls all-players]
       [:div.lobbies

@@ -2,8 +2,34 @@
 
 body {
     background-color: #111;
+    background-image: url('/bg.jpg');
+    background-size: cover;
+    background-position: center;
     color: #cde;
     font-family: 'Oxygen', sans-serif;
+    margin: 0;
+}
+
+.heading {
+    width: 100%;
+    background-color: #222222aa;
+}
+
+.games .heading, .lobbies .heading {
+    width: 100%;
+    background-color: #111111aa;
+}
+
+.mega, .lan {
+    display: inline;
+}
+
+.mega {
+    font-weight: 100;
+}
+
+h2 {
+    margin: 0;
 }
 
 h3 {
