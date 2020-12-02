@@ -55,7 +55,21 @@
 
 ; core
 (defn header []
-      [:div.heading [:h1.mega "Mega"] [:h1.lan "LAN"]])
+      [:div.main-heading [:h1.mega "Mega"] [:h1.lan "LAN"]])
+
+(defn my-status []
+      [:div.my-status
+       [:div.name
+        [:span "you are Jane Doe "]
+        [:span.link "(change user)"]]
+       [:div.statuses
+        [:div.free "free" [:br] [:span.desc "I'm available for games"]]
+        [:div.soon "soon" [:br] [:span.desc "I'll be available soon"]]
+        [:div.busy "busy" [:br] [:span.desc "Currently playing something"]]
+        [:div.away "away" [:br] [:span.desc "Not doing MegaLAN"]]]
+       [:div.status-age
+        [:span "status set x minutes ago "]
+        [:span.link "(refresh now)"]]])
 
 (defn lobbies [ls all-players]
       [:div.lobbies
@@ -77,6 +91,8 @@
             gs (vals (:games @state))]
            [:<>
             [header]
+            [my-status]
+            ;[:span.test "test"]
             [lobbies ls all-players]
             [games gs all-players]]))
 
