@@ -18,14 +18,16 @@
            [:div.lobby
             [:div.head
              [:h3 "Lobby: " game]
-             [:i.fal.fa-times.fa-lg.close-icon.point
+             [:i.fal.fa-times.fa-lg.close-icon.point.link
               {:on-click listener}]]
             [:div.mid
-             [:span (if (empty? notes) "(No notes entered)" notes)]]
+             [:span (if (empty? notes) "(No notes entered)" notes)]
+             [:i.fal.fa-edit.fa-lg.edit-icon.point.link]]
             [:div.body
              (if (empty? players)
                "(No players in lobby)"
-               (map #(vector :p {:key (:id %)} (:name %)) players))]]))
+               (map #(vector :p {:key (:id %)} (:name %)) players))
+             [:button.point "Add self to lobby"]]]))
 
 (defn game [g all-players]
       (let [{:keys [id name notes hi-players players]} g
@@ -63,10 +65,10 @@
         [:span "you are Jane Doe "]
         [:span.link "(change user)"]]
        [:div.statuses
-        [:div.free "free" [:br] [:span.desc "I'm available for games"]]
-        [:div.soon "soon" [:br] [:span.desc "I'll be available soon"]]
-        [:div.busy "busy" [:br] [:span.desc "Currently playing something"]]
-        [:div.away "away" [:br] [:span.desc "Not doing MegaLAN"]]]
+        [:div.free.active [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
+        [:div.soon.active [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
+        [:div.busy.active [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
+        [:div.away.active [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
        [:div.status-age
         [:span "status set x minutes ago "]
         [:span.link "(refresh now)"]]])

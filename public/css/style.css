@@ -13,6 +13,11 @@
     --action-tone-1: #0e553c;
     --action-tone-2: #267257;
     --action-tone-3: #478e75;
+    /*--green: #3ad; */
+    --green: #3da;
+    --yellow: #da3;
+    --red: #b46;
+    --away-grey: #aad;
 }
 
 body {
@@ -34,6 +39,7 @@ body {
 .link:hover {
     text-decoration: none;
     background-color: var(--action-tone-2);
+    cursor: pointer;
 }
 
 .mega, .lan {
@@ -52,14 +58,20 @@ body {
     margin-bottom: 3rem;
     padding: 1rem;
     background-color: var(--bg-tone-1);
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
 }
 
 .my-status {
+    margin: 1rem;
+    margin-bottom: -2rem;
     padding: 1rem;
     background-color: var(--bg-tone-1);
-    right: 1rem;
+    float: right;
+    /* right: 1rem;
     top: 1rem;
-    position: absolute;
+    position: absolute; */
 }
 
 .my-status .name {
@@ -77,8 +89,45 @@ body {
     text-align: center;
 }
 
+.statuses .name {
+    /* text-decoration: underline; */
+    /* text-decoration-width: 20px; */
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    border: solid 0px;
+    border-bottom-width: 1px;
+}
+.active .name {
+    border-bottom-width: 5px;
+}
+.free.active .name, .free:hover .name {
+    border-color: var(--green);
+}
+.soon.active .name, .soon:hover .name {
+    border-color: var(--yellow);
+}
+.busy.active .name, .busy:hover .name {
+    border-color: var(--red);
+}
+.away.active .name, .away:hover .name {
+    border-color: var(--away-grey);
+}
+
 .statuses .desc {
     color: var(--text-low);
+}
+
+.statuses .active.free .desc {
+    color: var(--green);
+}
+.statuses .active.soon .desc {
+    color: var(--yellow);
+}
+.statuses .active.busy .desc {
+    color: var(--red);
+}
+.statuses .active.away .desc {
+    color: var(--away-grey);
 }
 
 .status-age {
@@ -88,6 +137,7 @@ body {
 
 .lobbies, .games {
     margin: 1rem;
+    clear: both;
 }
 
 /*.test {
@@ -118,8 +168,13 @@ h3 {
 }
 
 .close-icon {
-    padding-top: 0.25rem;
-    padding-left: 1.5rem;
+    margin-top: 0.1rem;
+    margin-left: 1.5rem;
+    /*color: var(--action-tone-3);*/
+}
+
+.edit-icon {
+    float: right;
 }
 
 .heading {
@@ -194,7 +249,7 @@ h3 {
     cursor: pointer;
 }
 
-.create-lobby {
+button {
     width: 100%;
     background-color: var(--bg-tone-2);
     color: #eee;
