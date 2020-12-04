@@ -67,13 +67,13 @@
             [:div.mid
              [:> ReactMarkdown {:source notes}]]
             [:div.body
-             [:p.dim (str "high priority players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
+             [:p (str "high priority players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
              (if (empty? hi-players)
-               [:p "(no high priority players)"]
+               [:p.dim "(no high priority players)"]
                (map #(vector :p.player {:key (:id %) :class [(:status %)]} (player %)) hi-players))
-             [:p.dim (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
+             [:p (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
              (if (empty? players)
-               [:p "(no potential players)"]
+               [:p.dim "(no potential players)"]
                (map #(vector :p.player {:key (:id %) :class [(:status %)]} (player %)) players))
              (cond
                im-high-priority [:<>

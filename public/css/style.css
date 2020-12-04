@@ -189,7 +189,7 @@ body {
     display: inline-block;
 }
 
-.games div, .lobbies div {
+.games div, .lobbies > div {
     background-color: var(--bg-tone-2);
 }
 
@@ -333,7 +333,9 @@ button {
     border-color: #3cc;
     padding: 0.5rem;
 }
-.create-lobby:hover {
+button:hover {
+    background-color: var(--bg-tone-3);
+    cursor: pointer;
     text-decoration: underline;
 }
 
