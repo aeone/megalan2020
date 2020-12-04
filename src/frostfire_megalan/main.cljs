@@ -15,7 +15,9 @@
                                 (put! state-update-chan
                                       [[:lobbies id] nil]))
             add-self-listener #(let [update-func (state/add-self-to-lobby-update-gen my-uuid id)]
-                                    (put! state-mod-chan [update-func]))]
+                                    (put! state-mod-chan [update-func]))
+            rm-self-listener #(put! state-update-chan [[:lobbies id :players (keyword my-uuid)]])
+            im-in-lobby ((set (map :id players)) my-uuid)]
            ^{:key id}
            [:div.lobby
             [:div.head
@@ -32,7 +34,9 @@
                           [:div.player {:class [(:status %)]}
                              [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}]
                              [:span.name {:key (:id %)} (:name %)]]) players))
-             [:button.point {:on-click add-self-listener} "Add self to lobby"]]]))
+             (if im-in-lobby
+                [:button {:on-click rm-self-listener}  "Remove self from lobby"]
+                [:button {:on-click add-self-listener} "Add self to lobby"])]]))
 
 (def cname name)
 
