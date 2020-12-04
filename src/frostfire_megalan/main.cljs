@@ -16,7 +16,7 @@
                    [:textarea {:placeholder "Write lobby notes - e.g. 'we're in discord voice channel megalan-amethyst'"
                                :value       @a-notes
                                :on-change   #(reset! a-notes (.. % -target -value))}]
-                   [:button {:on-click #(do (put! state-update-chan [[:lobbies id :notes] @a-notes])
+                   [:button {:on-click #(do (put! state-update-chan [[:lobbies (keyword id) :notes] @a-notes])
                                             (reset! a-notes-active false))}
                     "Save"]]
                   [:<>
@@ -45,7 +45,7 @@
                [:div.lobby
                 [:div.head
                  [:h3 "Lobby: " game]
-                 [:i.fal.fa-times.fa-lg.close-icon.point.link
+                 [:i.fal.fa-times.fa-2x.close-icon.point.link
                   {:on-click kill-listener}]]
                 [lobby-notes id notes]
                 [:div.body
@@ -95,7 +95,7 @@
             [:div.mid
              [:> ReactMarkdown {:source notes}]]
             [:div.body
-             [:p (str "high priority players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
+             [:h4 (str "high priority players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
              (if (empty? hi-players)
                [:p.dim "(no high priority players)"]
                (map #(vector :p.player {:key (:id %)
@@ -103,7 +103,7 @@
                                         :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
                                         :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
                                         } (player %)) hi-players))
-             [:p (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
+             [:h4 (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
              (if (empty? players)
                [:p.dim "(no potential players)"]
                (map #(vector :p.player {:key (:id %)

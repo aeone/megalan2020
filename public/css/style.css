@@ -2,9 +2,9 @@
 
 :root {
     --bg-tone-0: #111111ee;
-    --bg-tone-1: #111111cc;
-    --bg-tone-2: #222222cc;
-    --bg-tone-3: #333333cc;
+    --bg-tone-1: #111111dd;
+    --bg-tone-2: #222222dd;
+    --bg-tone-3: #333333dd;
     --text: #eee;
     --text-dim: #aaa;
     --text-low: #777;
@@ -181,7 +181,7 @@ body {
     clear: both;
 }
 
-.lobby .body p {
+.lobby .body p, .games h4 {
     margin-top: 0;
 }
 
@@ -218,8 +218,14 @@ h3 {
     /*color: var(--action-tone-3);*/
 }
 
+.lobby .mid {
+    position: relative;
+}
 .edit-icon {
-    float: right;
+    /*float: right;*/
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
 }
 
 .heading {
