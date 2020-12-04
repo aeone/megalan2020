@@ -8,18 +8,14 @@
 ; helpers
 (defn lobby [l all-players my-uuid]
       (let [{:keys [id game notes players]} l
-            players (filter #((set (keys players)) (:id %)) all-players)
+            players (filter #((set (map name (keys players))) (:id %)) all-players)
             p-msg (if (empty? players) "no players" (clojure.string.join ", " (map :name players)))
             confirm-msg (str "Do you want to delete the lobby for " game " containing " p-msg "?")
             kill-listener #(when-let [_ (js/confirm confirm-msg)]
                                 (put! state-update-chan
                                       [[:lobbies id] nil]))
-            ;add-self-listener #((let [{:keys [assoc dissoc]} (state/add-self-to-lobby-generator my-uuid id)]
-            ;                         ((doseq [d dissoc] (put! state-update-chan d))
-            ;                          (put! state-update-chan assoc))))
             add-self-listener #(let [update-func (state/add-self-to-lobby-update-gen my-uuid id)]
-                                    (put! state-mod-chan [update-func]))
-            ]
+                                    (put! state-mod-chan [update-func]))]
            ^{:key id}
            [:div.lobby
             [:div.head
@@ -169,6 +165,5 @@
              :else [:<>
                       [header]
                       [my-status current-player all-players]
-                      ;[:span.test "test"]
                       [lobbies ls all-players current-player]
                       [games gs all-players]])))
