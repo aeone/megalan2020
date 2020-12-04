@@ -61,23 +61,35 @@
 
 (defn my-status [current-player all-players]
       (let [me (first (filter #(= (:id %) current-player) all-players))
+            id (:id me)
             free (= (:status me) "free")
             soon (= (:status me) "soon")
             busy (= (:status me) "busy")
-            away (= (:status me) "away")]
+            away (= (:status me) "away")
+            now (.now js/Date)
+            status-age-mins (js/Math.floor (/ (- now (:status-set me)) (* 1000 60)))]
            [:div.my-status
             [:div.name
              [:span (str "you are " (:name me) " ")]
              [:span.link {:on-click #(swap! state/internal-state (fn [s] (dissoc s "player-uuid")))}
               "(change user)"]]
             [:div.statuses
-             [:div.free {:class [(when free "active")]} [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
-             [:div.soon {:class [(when soon "active")]} [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
-             [:div.busy {:class [(when busy "active")]} [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
-             [:div.away {:class [(when away "active")]} [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
+             [:div.free {:class [(when free "active")]
+                         :on-click #(put! state-update-chan [[:players id "status"] "free"])}
+              [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
+             [:div.soon {:class [(when soon "active")]
+                         :on-click #(put! state-update-chan [[:players id "status"] "soon"])}
+              [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
+             [:div.busy {:class [(when busy "active")]
+                         :on-click #(put! state-update-chan [[:players id "status"] "busy"])}
+              [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
+             [:div.away {:class [(when away "active")]
+                         :on-click #(put! state-update-chan [[:players id "status"] "away"])}
+              [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
             [:div.status-age
-             [:span "status set x minutes ago "]
-             [:span.link "(refresh now)"]]]))
+             [:span (str "status set " status-age-mins " minutes ago ")]
+             [:span.link {:on-click #(put! state-update-chan [[:players id :status-set] (.now js/Date)])}
+              "(refresh now)"]]]))
 
 (defn lobbies [ls all-players]
       [:div.lobbies
