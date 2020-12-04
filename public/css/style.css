@@ -157,7 +157,6 @@ body {
 
 .status-age {
     text-align: center;
-    color: var(--text-dim);
 }
 
 .lobbies, .games {
@@ -194,7 +193,7 @@ h3 {
 .lobby .mid {
     position: relative;
 }
-.edit-icon {
+.lobby .edit-icon {
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;

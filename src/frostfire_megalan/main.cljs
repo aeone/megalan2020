@@ -1,5 +1,5 @@
 (ns frostfire-megalan.main
-  (:require [clojure.core.async :refer [put!]]
+  (:require [clojure.core.async :refer [put! go-loop timeout <!]]
             [reagent.core :as r]
             [reagent.ratom :as ratom]
             [frostfire-megalan.state :as state :refer [state-update-chan state-mod-chan]]
@@ -14,6 +14,7 @@
                 (if @a-notes-active
                   [:<>
                    [:textarea {:placeholder "Write lobby notes - e.g. 'we're in discord voice channel megalan-amethyst'"
+                               :rows 10
                                :value       @a-notes
                                :on-change   #(reset! a-notes (.. % -target -value))}]
                    [:button {:on-click #(do (put! state-update-chan [[:lobbies (keyword id) :notes] @a-notes])
@@ -92,7 +93,9 @@
            ^{:key id}
            [:div.game
             [:div.head
-             [:h3 name]]
+             [:h3 name]
+             [:i.fal.fa-edit.fa-lg.edit-icon.point.link {:on-click
+                                                         #(swap! state/internal-state (fn [s] (assoc s "edit-game" id)))}]]
             [:div.mid
              [:> ReactMarkdown {:source notes}]]
             [:div.body
@@ -133,6 +136,12 @@
 (defn header []
       [:div.main-heading [:h1.mega "Mega"] [:h1.lan "LAN"]])
 
+(def status-poke (r/atom (.now js/Date)))
+(go-loop []
+         (<! (timeout (* 30 1000)))
+         (reset! status-poke (.now js/Date))
+         (recur))
+
 (defn my-status [current-player all-players]
       (let [me (first (filter #(= (:id %) current-player) all-players))
             id (:id me)
@@ -140,13 +149,16 @@
             soon (= (:status me) "soon")
             busy (= (:status me) "busy")
             away (= (:status me) "away")
-            now (.now js/Date)
+            now @status-poke
             status-age-mins (js/Math.floor (/ (- now (:status-set me)) (* 1000 60)))
             refresh #(put! state-update-chan [[:players id :status-set] (.now js/Date)])]
            [:div.my-status
             [:div.name
-             [:span (str "you are " (:name me) " ")]
-             [:span.link {:on-click #(swap! state/internal-state (fn [s] (dissoc s "player-uuid")))}
+             [:span.dim (str "you are ")]
+             [:span (str (:name me) " ")]
+             [:span.link.dim {:on-click #(swap! state/internal-state (fn [s] (assoc s "edit-user" me)))} "(edit info)"]
+             [:span " "]
+             [:span.link.dim {:on-click #(swap! state/internal-state (fn [s] (dissoc s "player-uuid")))}
               "(change user)"]]
             [:div.statuses
              [:div.free {:class    [(when free "active")]
@@ -161,7 +173,7 @@
              [:div.away {:class [(when away "active")]
                          :on-click #(do (refresh) (put! state-update-chan [[:players id "status"] "away"]))}
               [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
-            [:div.status-age
+            [:div.status-age.dim
              [:span (str "status set " status-age-mins " minute" (when (not= 1 status-age-mins) "s") " ago ")]
              [:span.link {:on-click refresh}
               "(refresh now)"]]]))
@@ -216,7 +228,8 @@
                   [:input {:placeholder "Your email, for Gravatar to supply you with an avatar"
                            :value       @a-email
                            :on-change   #(reset! a-email (.. % -target -value))}]
-                  [:textarea {:placeholder "Notes for you, e.g. your discord username, battle.net, steam, switch friend codes, etc."
+                  [:textarea {:placeholder "Notes for you, e.g. your discord username, battle.net, steam, switch friend codes, etc. (supports markdown)"
+                              :rows 10
                               :value       @a-notes
                               :on-change   #(reset! a-notes (.. % -target -value))}]
                   [:button {:on-click #(let [player (state/create-player @a-name @a-email @a-notes)]
@@ -227,19 +240,47 @@
                    "Create & log in as user"]]]
                 ])))
 
-(defn create-game []
-      (let [a-name (r/atom "")
-            a-sponsor (r/atom "")
-            a-notes (r/atom "")]
-         (fn []
+(defn edit-user [user]
+      (let [a-name (r/atom (:name user))
+            a-email (r/atom (:gravatar-email user))
+            a-notes (r/atom (:notes user))]
+           (fn []
+               [:div.modal
+                [:h2 "Edit user"]
+                [:div.row
+                 [:img.demo-av {:src (str "https://www.gravatar.com/avatar/" (when (not (empty? @a-email)) (.md5 js/window @a-email)))}]
+                 [:div.col
+                  [:input {:placeholder "Your name, as it will be displayed to all users"
+                           :value       @a-name
+                           :on-change   #(reset! a-name (.. % -target -value))}]
+                  [:input {:placeholder "Your email, for Gravatar to supply you with an avatar"
+                           :value       @a-email
+                           :on-change   #(reset! a-email (.. % -target -value))}]
+                  [:textarea {:placeholder "Notes for you, e.g. your discord username, battle.net, steam, switch friend codes, etc. (supports markdown)"
+                              :rows        10
+                              :value       @a-notes
+                              :on-change   #(reset! a-notes (.. % -target -value))}]
+                  [:button {:on-click #(do (put! state-update-chan [[:players (keyword (:id user)) :name] @a-name])
+                                           (put! state-update-chan [[:players (keyword (:id user)) :gravatar-email] @a-email])
+                                           (put! state-update-chan [[:players (keyword (:id user)) :notes] @a-notes])
+                                           (swap! state/internal-state (fn [s] (dissoc s "edit-user"))))}
+                   "Save changes to user"]]]])))
+
+(defn create-game [game]
+      (let [a-name (r/atom (:name game))
+            a-sponsor (r/atom (:sponsor game))
+            a-notes (r/atom (:notes game))]
+         (fn [game]
               [:div.modal
-               [:h1 "Create a game"]
+               [:h1 (if game (str "Edit game: " (:name game)) "Create a game")]
                [:h2 "Info"]
                [:p "For the game notes, specify information like:"]
                [:ul
                 [:li "Elevator pitch - what kind of game is it, and what kind of person would like it?"]
                 [:li "Number of players supported"]
                 [:li "Number of players ideal"]
+                [:li "How long a game tends to take"]
+                [:li "How beginner-friendly it is"]
                 [:li "Equipment / licenses required (e.g. 'buy on Steam' / 'needs controller' / 'phone only')"]
                 [:li "Any places where licenses can be obtained (e.g. 'copies exist on Softwire Steam accounts')"]]
 
@@ -251,15 +292,22 @@
                         :value @a-sponsor
                         :on-change #(reset! a-sponsor (.. % -target -value))}]
                [:textarea {:placeholder "Game notes (markdown supported)"
+                           :rows 10
                         :value @a-notes
                         :on-change #(reset! a-notes (.. % -target -value))}]
 
-               [:button {:on-click #(let [game (state/create-game @a-name @a-sponsor @a-notes)]
-                                         (put! state-update-chan [[:games (:id game)] game])
-                                         (swap! state/internal-state (fn [s] (dissoc s "modal"))))}
-                "Create this game"]
+               (if game
+                 [:button {:on-click #(do (put! state-update-chan [[:games (keyword (:id game)) :name] @a-name])
+                                          (put! state-update-chan [[:games (keyword (:id game)) :sponsor] @a-sponsor])
+                                          (put! state-update-chan [[:games (keyword (:id game)) :notes] @a-notes])
+                                          (swap! state/internal-state (fn [s] (dissoc s "edit-game"))))}
+                  "Save changes to this game"]
+                 [:button {:on-click #(let [game (state/create-game @a-name @a-sponsor @a-notes)]
+                                           (put! state-update-chan [[:games (:id game)] game])
+                                           (swap! state/internal-state (fn [s] (dissoc s "modal"))))}
+                  "Create this game"])
                [:button {:on-click #(swap! state/internal-state (fn [s] (dissoc s "modal")))}
-                "Nope, cancel, completely abandon this"]])))
+                "Nope, cancel this (discard changes)"]])))
 
 (defn tooltip [p]
       (let [
@@ -284,6 +332,9 @@
             gs (vals (:games @state))
             on-login-screen (not (contains? @internal-state "player-uuid"))
             on-create-game-screen (get @internal-state "modal")
+            editing-user (get @internal-state "edit-user")
+            editing-game (get @internal-state "edit-game")
+            game-being-edited (first (filter #(= (:id %) editing-game) gs))
             current-player (get @internal-state "player-uuid")
             player-tooltip (get @internal-state "player-tooltip")
             filtering-games (get @internal-state "filter-games")]
@@ -292,7 +343,9 @@
                            [:h1 "Reticulating splines"]
                            [:h2 "(loading data from firebase, please wait)"]]
              on-login-screen [login all-players]
-             on-create-game-screen [create-game]
+             editing-user [edit-user editing-user]
+             on-create-game-screen [create-game false]
+             editing-game [create-game game-being-edited]
              :else [:<>
                       [header]
                       [my-status current-player all-players]
