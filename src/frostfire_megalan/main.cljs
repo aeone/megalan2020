@@ -51,13 +51,14 @@
                 [:div.body
                  (if (empty? players)
                    [:p "(No players in lobby)"]
-                   (map #(do ^{:key (:id %)}
-                             [:div.player {:class         [(:status %)]
-                                           :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
-                                           :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
-                                           }
-                              [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}]
-                              [:span.name {:key (:id %)} (:name %)]]) players))
+                   [:div.players
+                    (map #(do ^{:key (:id %)}
+                              [:div.player {:class         [(:status %)]
+                                            :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
+                                            :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
+                                            }
+                               [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}]
+                               [:span.name {:key (:id %)} (:name %)]]) players)])
                  (if im-in-lobby
                    [:button {:on-click rm-self-listener} "Remove self from lobby"]
                    [:button {:on-click add-self-listener} "Add self to lobby"])]]))
@@ -98,19 +99,21 @@
              [:h4 (str "high priority players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
              (if (empty? hi-players)
                [:p.dim "(no high priority players)"]
-               (map #(vector :p.player {:key (:id %)
-                                        :class [(:status %)]
-                                        :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
-                                        :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
-                                        } (player %)) hi-players))
+               [:div.players
+                (map #(vector :p.player {:key           (:id %)
+                                         :class         [(:status %)]
+                                         :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
+                                         :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
+                                         } (player %)) hi-players)])
              [:h4 (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
              (if (empty? players)
                [:p.dim "(no potential players)"]
-               (map #(vector :p.player {:key (:id %)
-                                        :class [(:status %)]
-                                        :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
-                                        :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
-                                        } (player %)) players))
+               [:div.players
+                (map #(vector :p.player {:key           (:id %)
+                                         :class         [(:status %)]
+                                         :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
+                                         :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
+                                         } (player %)) players)])
              (cond
                im-high-priority [:<>
                                  [:button {:on-click add-plyr-listener} "Switch yourself to normal priority"]
@@ -261,18 +264,8 @@
 (defn tooltip [p]
       (let [
             {:keys [name gravatar-email notes status status-set]} p
-            ;name (get p "name")
-            ;gravatar-email (get p "gravatar-email")
-            ;notes (get p "notes")
-            ;status (get p "status")
-            ;status-set (get p "status-set")
             now (.now js/Date)
             status-age-mins (js/Math.floor (/ (- now status-set) (* 1000 60)))]
-           ;(js/console.log "tooltip!")
-           ;(js/console.log p)
-           ;(js/console.log (:name p))
-           ;(js/console.log (get p "name"))
-           ;(js/console.log (:gravatar-email (js->clj p)))
            [:div.tooltip
             (when gravatar-email
               [:img.avatar.big {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window gravatar-email))}])

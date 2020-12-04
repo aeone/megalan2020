@@ -34,17 +34,6 @@
 (defn create-game [name sponsor notes]
       (game (str (random-uuid)) name notes sponsor [] []))
 
-;(defn add-self-to-lobby-generator [player-uuid lobby-uuid]
-;      (fn [state]
-;          (let [lobbies (:lobbies state)
-;                lobbies-im-in (filter #(contains? (keys (:players %)) player-uuid) lobbies)]
-;               (js/console.log "lobbies!")
-;               (js/console.log lobbies)
-;               (js/console.log lobbies-im-in)
-;               (as-> state s
-;                     (reduce #(update-in %1 [:lobbies (:id %2) :players] dissoc player-uuid) s lobbies-im-in)
-;                     (assoc-in s [:lobbies lobby-uuid :players player-uuid] true)))))
-
 (defn in?
       "true if coll contains elm"
       [coll elm]
@@ -62,6 +51,48 @@
                (concat
                  [[[:lobbies lobby-key :players player-key] true]]
                  (map #(vector [:lobbies (:id %) :players player-key]) lobbies-im-in)))))
+
+; state & updates
+(defonce state (r/atom {:pending-load true}))
+(def internal-state (r/atom (-> (.-localStorage js/window)
+                                (.getItem "state")
+                                (->> (.parse js/JSON))
+                                (js->clj)
+                                (or {}))))
+(ratom/run! (.setItem (.-localStorage js/window)
+                      "state"
+                      (.stringify js/JSON (clj->js @internal-state))))
+
+(def state-mod-chan (chan))
+(def state-update-chan (chan))
+
+(go-loop []
+         (let [[func] (<! state-mod-chan)
+               updates (func @state)]
+              (js/console.log "Received message on state-mod-chan, with " (count updates) " updates.")
+              (doseq [u updates]
+                     (put! state-update-chan u))
+              (recur)))
+
+(go-loop []
+         (let [[path val :as msg] (<! state-update-chan)
+               path-head (butlast path)
+               path-tail (last path)]
+              (js/console.log "Received message on state-update-chan:")
+              (js/console.log msg)
+              (if val
+                (swap! state #(assoc-in % path val))
+                (swap! state #(update-in % path-head dissoc path-tail)))
+              (put! fb/to-fb msg)
+              (recur)))
+
+(go-loop []
+         (let [val (<! fb/from-fb)]
+              (js/console.log "Received message on from-fb:")
+              (js/console.log val)
+              (reset! state val)
+              (recur)))
+
 
 ; test data generator
 ;(defn- letters [count]
@@ -110,47 +141,3 @@
 ;           {:players (inject players)
 ;            :lobbies (inject (map #(gen-lobby players) (range 4)))
 ;            :games   (inject (map #(gen-game players) (range 15)))}))
-
-; state & updates
-(defonce state (r/atom {:pending-load true}))
-(def internal-state (r/atom (-> (.-localStorage js/window)
-                                (.getItem "state")
-                                (->> (.parse js/JSON))
-                                (js->clj)
-                                (or {}))))
-(ratom/run! (.setItem (.-localStorage js/window)
-                      "state"
-                      (.stringify js/JSON (clj->js @internal-state))))
-;(ratom/run! (-> @internal-state
-;                (clj->js)
-;                #(.setItem (.-localStorage js/window) "state" %)))
-
-(def state-mod-chan (chan))
-(def state-update-chan (chan))
-
-(go-loop []
-         (let [[func] (<! state-mod-chan)
-               updates (func @state)]
-              (js/console.log "Received message on state-mod-chan, with " (count updates) " updates.")
-              (doseq [u updates]
-                     (put! state-update-chan u))
-              (recur)))
-
-(go-loop []
-         (let [[path val :as msg] (<! state-update-chan)
-               path-head (butlast path)
-               path-tail (last path)]
-              (js/console.log "Received message on state-update-chan:")
-              (js/console.log msg)
-              (if val
-                (swap! state #(assoc-in % path val))
-                (swap! state #(update-in % path-head dissoc path-tail)))
-              (put! fb/to-fb msg)
-              (recur)))
-
-(go-loop []
-         (let [val (<! fb/from-fb)]
-              (js/console.log "Received message on from-fb:")
-              (js/console.log val)
-              (reset! state val)
-              (recur)))

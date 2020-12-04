@@ -11,11 +11,9 @@
     --accent-tone-1: #1d1959;
     --accent-tone-2: #363377;
     --accent-tone-3: #585594;
-    /*--action-tone-1: #0e553c;*/
     --action-tone-1: #009688;
     --action-tone-2: #267257;
     --action-tone-3: #478e75;
-    /*--green: #3ad; */
     --green: #3da;
     --yellow: #da3;
     --red: #b46;
@@ -28,13 +26,6 @@ body {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-    /*
-    background-color: var(--bg-tone-1);
-    background-image: url('/bg-2.jpg');
-    background-size: cover;
-    background-position: center;
-    */
-    /* color: #cde; */
     color: var(--text);
     font-family: 'Oxygen', sans-serif;
     margin: 0;
@@ -91,8 +82,6 @@ body {
 }
 
 .main-heading {
-    /* width: 100%; */
-    /* width: 9.25rem; */
     display: inline-block;
     margin: 1rem;
     margin-bottom: 3rem;
@@ -109,9 +98,6 @@ body {
     padding: 1rem;
     background-color: var(--bg-tone-1);
     float: right;
-    /* right: 1rem;
-    top: 1rem;
-    position: absolute; */
 }
 
 .my-status .name {
@@ -130,8 +116,6 @@ body {
 }
 
 .statuses .name {
-    /* text-decoration: underline; */
-    /* text-decoration-width: 20px; */
     display: inline-block;
     margin-bottom: 0.5rem;
     border: solid 0px;
@@ -183,18 +167,14 @@ body {
 
 .lobby .body p, .games h4 {
     margin-top: 0;
+    margin-bottom: 0;
 }
-
-/*.test {
-    margin: 1rem;
-    background-color: #222222aa;
-}*/
 
 .games .heading, .lobbies .heading {
     display: inline-block;
 }
 
-.games div, .lobbies > div {
+.games > div, .lobbies > div {
     background-color: var(--bg-tone-2);
 }
 
@@ -206,23 +186,15 @@ h3 {
     display: inline;
 }
 
-.fal {
-    /*
-    vertical-align: middle;
-    */
-}
-
 .close-icon {
     margin-top: 0.1rem;
     margin-left: 1.5rem;
-    /*color: var(--action-tone-3);*/
 }
 
 .lobby .mid {
     position: relative;
 }
 .edit-icon {
-    /*float: right;*/
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
@@ -242,11 +214,6 @@ h3 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /*
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    */
 }
 
 .head h3 {
@@ -280,6 +247,10 @@ h3 {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.lobby .players {
+    margin-bottom: 1rem;
 }
 
 .player .avatar {
@@ -327,6 +298,12 @@ h3 {
     flex-grow: 1;
 }
 
+.game .players {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
 .dim {
     color: var(--text-dim);
 }
@@ -337,7 +314,6 @@ h3 {
 
 button {
     width: 100%;
-    /* background-color: var(--bg-tone-2); */
     background-color: var(--action-tone-1);
     color: #eee;
     margin-top: 0.5rem;
