@@ -48,8 +48,6 @@
                              (put! state-update-chan
                                    [[:lobbies uuid]
                                     (state/lobby uuid name "" {})])))
-            ;im-high-priority (contains? (map cname (keys hi-players)) my-uuid)
-            ;im-potential-plyr (contains? (map cname (keys players)) my-uuid)
             im-high-priority (seq (filter #(= (:id %) my-uuid) hi-players))
             im-potential-plyr (seq (filter #(= (:id %) my-uuid) players))
             add-high-listener #(do
@@ -60,13 +58,8 @@
                                  (put! state-update-chan [[:games id :hi-players my-uuid]]))
             rm-self-listener #(do
                                  (put! state-update-chan [[:games id :hi-players my-uuid]])
-                                 (put! state-update-chan [[:games id :players my-uuid]]))]
-           ;(js/console.log my-uuid)
-           (js/console.log im-high-priority)
-           (js/console.log hi-players)
-           (js/console.log (count (filter #(= (:id %) my-uuid) hi-players)))
-           ;(js/console.log (map cname (keys hi-players)))
-           ;(js/console.log (map cname (keys players)))
+                                 (put! state-update-chan [[:games id :players my-uuid]]))
+            player #(do [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}])]
            ^{:key id}
            [:div.game
             [:div.head
@@ -74,14 +67,14 @@
             [:div.mid
              [:> ReactMarkdown {:source notes}]]
             [:div.body
-             [:p.dim "high priority players"]
+             [:p.dim (str "high priority players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
              (if (empty? hi-players)
                [:p "(no high priority players)"]
-               (map #(vector :p {:key (:id %)} (:name %)) hi-players))
-             [:p.dim "potential players"]
+               (map #(vector :p.player {:key (:id %) :class [(:status %)]} (player %)) hi-players))
+             [:p.dim (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
              (if (empty? players)
                [:p "(no potential players)"]
-               (map #(vector :p {:key (:id %)} (:name %)) players))
+               (map #(vector :p.player {:key (:id %) :class [(:status %)]} (player %)) players))
              (cond
                im-high-priority [:<>
                                  [:button {:on-click add-plyr-listener} "Switch yourself to normal priority"]
