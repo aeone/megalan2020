@@ -315,6 +315,10 @@ h3 {
     flex-grow: 1;
 }
 
+.dim {
+    color: var(--text-dim);
+}
+
 .point {
     cursor: pointer;
 }
@@ -323,6 +327,7 @@ button {
     width: 100%;
     background-color: var(--bg-tone-2);
     color: #eee;
+    margin-top: 0.5rem;
     border-style: solid;
     border-width: 1px;
     border-color: #3cc;

@@ -34,10 +34,12 @@
                              [:span.name {:key (:id %)} (:name %)]]) players))
              [:button.point {:on-click add-self-listener} "Add self to lobby"]]]))
 
-(defn game [g all-players]
+(def cname name)
+
+(defn game [g all-players my-uuid]
       (let [{:keys [id name notes hi-players players]} g
-            hi-players (filter #((set (keys hi-players)) (:id %)) all-players)
-            players (filter #((set (keys players)) (:id %)) all-players)
+            hi-players (filter #((set (map cname (keys hi-players))) (:id %)) all-players)
+            players (filter #((set (map cname (keys players))) (:id %)) all-players)
             listener #(when-let
                         [_ (js/confirm
                              (str "Do you want to create a lobby for " name "?"))]
@@ -45,7 +47,26 @@
                         (let [uuid (str (random-uuid))]
                              (put! state-update-chan
                                    [[:lobbies uuid]
-                                    (state/lobby uuid name "" {})])))]
+                                    (state/lobby uuid name "" {})])))
+            ;im-high-priority (contains? (map cname (keys hi-players)) my-uuid)
+            ;im-potential-plyr (contains? (map cname (keys players)) my-uuid)
+            im-high-priority (seq (filter #(= (:id %) my-uuid) hi-players))
+            im-potential-plyr (seq (filter #(= (:id %) my-uuid) players))
+            add-high-listener #(do
+                                 (put! state-update-chan [[:games id :hi-players my-uuid] true])
+                                 (put! state-update-chan [[:games id :players my-uuid]]))
+            add-plyr-listener #(do
+                                 (put! state-update-chan [[:games id :players my-uuid] true])
+                                 (put! state-update-chan [[:games id :hi-players my-uuid]]))
+            rm-self-listener #(do
+                                 (put! state-update-chan [[:games id :hi-players my-uuid]])
+                                 (put! state-update-chan [[:games id :players my-uuid]]))]
+           ;(js/console.log my-uuid)
+           (js/console.log im-high-priority)
+           (js/console.log hi-players)
+           (js/console.log (count (filter #(= (:id %) my-uuid) hi-players)))
+           ;(js/console.log (map cname (keys hi-players)))
+           ;(js/console.log (map cname (keys players)))
            ^{:key id}
            [:div.game
             [:div.head
@@ -53,12 +74,28 @@
             [:div.mid
              [:> ReactMarkdown {:source notes}]]
             [:div.body
-             (map #(vector :p {:key (:id %)} (:name %)) hi-players)
-             (map #(vector :p {:key (:id %)} (:name %)) players)]
+             [:p.dim "high priority players"]
+             (if (empty? hi-players)
+               [:p "(no high priority players)"]
+               (map #(vector :p {:key (:id %)} (:name %)) hi-players))
+             [:p.dim "potential players"]
+             (if (empty? players)
+               [:p "(no potential players)"]
+               (map #(vector :p {:key (:id %)} (:name %)) players))
+             (cond
+               im-high-priority [:<>
+                                 [:button {:on-click add-plyr-listener} "Switch yourself to normal priority"]
+                                 [:button {:on-click rm-self-listener} "Remove yourself from player list"]]
+               im-potential-plyr [:<>
+                                  [:button {:on-click add-high-listener} "Switch yourself to high priority"]
+                                  [:button {:on-click rm-self-listener} "Remove yourself from player list"]]
+               :else [:<>
+                      [:button {:on-click add-high-listener} "Add yourself as high priority player"]
+                      [:button {:on-click add-plyr-listener} "Add yourself as potential player"]])]
             [:div.foot
              [:button.create-lobby.point
               {:on-click listener}
-              "Create lobby"]]]))
+              (str "Create lobby for " name)]]]))
 
 ; core
 (defn header []
@@ -72,28 +109,29 @@
             busy (= (:status me) "busy")
             away (= (:status me) "away")
             now (.now js/Date)
-            status-age-mins (js/Math.floor (/ (- now (:status-set me)) (* 1000 60)))]
+            status-age-mins (js/Math.floor (/ (- now (:status-set me)) (* 1000 60)))
+            refresh #(put! state-update-chan [[:players id :status-set] (.now js/Date)])]
            [:div.my-status
             [:div.name
              [:span (str "you are " (:name me) " ")]
              [:span.link {:on-click #(swap! state/internal-state (fn [s] (dissoc s "player-uuid")))}
               "(change user)"]]
             [:div.statuses
-             [:div.free {:class [(when free "active")]
-                         :on-click #(put! state-update-chan [[:players id "status"] "free"])}
+             [:div.free {:class    [(when free "active")]
+                         :on-click #(do (refresh) (put! state-update-chan [[:players id "status"] "free"]))}
               [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
              [:div.soon {:class [(when soon "active")]
-                         :on-click #(put! state-update-chan [[:players id "status"] "soon"])}
+                         :on-click #(do (refresh) (put! state-update-chan [[:players id "status"] "soon"]))}
               [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
              [:div.busy {:class [(when busy "active")]
-                         :on-click #(put! state-update-chan [[:players id "status"] "busy"])}
+                         :on-click #(do (refresh) (put! state-update-chan [[:players id "status"] "busy"]))}
               [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
              [:div.away {:class [(when away "active")]
-                         :on-click #(put! state-update-chan [[:players id "status"] "away"])}
+                         :on-click #(do (refresh) (put! state-update-chan [[:players id "status"] "away"]))}
               [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
             [:div.status-age
              [:span (str "status set " status-age-mins " minute" (when (not= 1 status-age-mins) "s") " ago ")]
-             [:span.link {:on-click #(put! state-update-chan [[:players id :status-set] (.now js/Date)])}
+             [:span.link {:on-click refresh}
               "(refresh now)"]]]))
 
 (defn lobbies [ls all-players my-uuid]
@@ -103,14 +141,14 @@
        [:div.body
         (map #(lobby % all-players my-uuid) ls)]])
 
-(defn games [gs all-players]
+(defn games [gs all-players my-uuid]
       [:div.games
        [:div.heading
         [:h2 "Game list"]
         [:span.link "see only games I'm interested in"]
         [:span.link {:on-click #(swap! state/internal-state (fn [s] (assoc s "modal" "create-game")))} "create a new game"]]
        [:div.body
-        (map #(game % all-players) gs)]])
+        (map #(game % all-players my-uuid) gs)]])
 
 ; modals
 (defn login [all-players]
@@ -204,4 +242,4 @@
                       [header]
                       [my-status current-player all-players]
                       [lobbies ls all-players current-player]
-                      [games gs all-players]])))
+                      [games gs all-players current-player]])))
