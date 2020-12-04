@@ -30,6 +30,25 @@
 (defn create-player [name gravatar-email notes]
       (player (str (random-uuid)) name gravatar-email notes))
 
+;(defn add-self-to-lobby-generator [player-uuid lobby-uuid]
+;      (fn [state]
+;          (let [lobbies (:lobbies state)
+;                lobbies-im-in (filter #(contains? (keys (:players %)) player-uuid) lobbies)]
+;               (js/console.log "lobbies!")
+;               (js/console.log lobbies)
+;               (js/console.log lobbies-im-in)
+;               (as-> state s
+;                     (reduce #(update-in %1 [:lobbies (:id %2) :players] dissoc player-uuid) s lobbies-im-in)
+;                     (assoc-in s [:lobbies lobby-uuid :players player-uuid] true)))))
+
+(defn add-self-to-lobby-update-gen [player-uuid lobby-uuid]
+      (fn [state]
+          (let [lobbies (:lobbies state)
+                lobbies-im-in (filter #(contains? (keys (:players %)) player-uuid) lobbies)]
+               (concat
+                 [[[:lobbies lobby-uuid :players player-uuid] true]]
+                 (map #([[:lobbies (:id %) :players player-uuid]]) lobbies-im-in)))))
+
 ; test data generator
 ;(defn- letters [count]
 ;       (-> "abcdefghijklmnopqrstuvwxyz"
@@ -92,7 +111,16 @@
 ;                (clj->js)
 ;                #(.setItem (.-localStorage js/window) "state" %)))
 
+(def state-mod-chan (chan))
 (def state-update-chan (chan))
+
+(go-loop []
+         (let [[func] (<! state-mod-chan)
+               updates (func @state)]
+              (js/console.log "Received message on state-mod-chan, with " (count updates) " updates.")
+              (doseq [u updates]
+                     (put! state-update-chan u))
+              (recur)))
 
 (go-loop []
          (let [[path val :as msg] (<! state-update-chan)

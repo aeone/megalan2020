@@ -2,24 +2,30 @@
   (:require [clojure.core.async :refer [put!]]
             [reagent.core :as r]
             [reagent.ratom :as ratom]
-            [frostfire-megalan.state :as state :refer [state-update-chan]]
+            [frostfire-megalan.state :as state :refer [state-update-chan state-mod-chan]]
             ["react-markdown" :as ReactMarkdown]))
 
 ; helpers
-(defn lobby [l all-players]
+(defn lobby [l all-players my-uuid]
       (let [{:keys [id game notes players]} l
             players (filter #((set (keys players)) (:id %)) all-players)
             p-msg (if (empty? players) "no players" (clojure.string.join ", " (map :name players)))
             confirm-msg (str "Do you want to delete the lobby for " game " containing " p-msg "?")
-            listener #(when-let [_ (js/confirm confirm-msg)]
+            kill-listener #(when-let [_ (js/confirm confirm-msg)]
                                 (put! state-update-chan
-                                      [[:lobbies id] nil]))]
+                                      [[:lobbies id] nil]))
+            ;add-self-listener #((let [{:keys [assoc dissoc]} (state/add-self-to-lobby-generator my-uuid id)]
+            ;                         ((doseq [d dissoc] (put! state-update-chan d))
+            ;                          (put! state-update-chan assoc))))
+            add-self-listener #(let [update-func (state/add-self-to-lobby-update-gen my-uuid id)]
+                                    (put! state-mod-chan [update-func]))
+            ]
            ^{:key id}
            [:div.lobby
             [:div.head
              [:h3 "Lobby: " game]
              [:i.fal.fa-times.fa-lg.close-icon.point.link
-              {:on-click listener}]]
+              {:on-click kill-listener}]]
             [:div.mid
              [:span (if (empty? notes) "(No notes entered)" notes)]
              [:i.fal.fa-edit.fa-lg.edit-icon.point.link]]
@@ -27,7 +33,7 @@
              (if (empty? players)
                "(No players in lobby)"
                (map #(vector :p {:key (:id %)} (:name %)) players))
-             [:button.point "Add self to lobby"]]]))
+             [:button.point {:on-click add-self-listener} "Add self to lobby"]]]))
 
 (defn game [g all-players]
       (let [{:keys [id name notes hi-players players]} g
@@ -91,12 +97,12 @@
              [:span.link {:on-click #(put! state-update-chan [[:players id :status-set] (.now js/Date)])}
               "(refresh now)"]]]))
 
-(defn lobbies [ls all-players]
+(defn lobbies [ls all-players my-uuid]
       [:div.lobbies
        [:div.heading
         [:h2 "Open game lobbies"]]
        [:div.body
-        (map #(lobby % all-players) ls)]])
+        (map #(lobby % all-players my-uuid) ls)]])
 
 (defn games [gs all-players]
       [:div.games
@@ -164,5 +170,5 @@
                       [header]
                       [my-status current-player all-players]
                       ;[:span.test "test"]
-                      [lobbies ls all-players]
+                      [lobbies ls all-players current-player]
                       [games gs all-players]])))
