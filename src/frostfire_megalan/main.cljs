@@ -60,17 +60,21 @@
       [:div.main-heading [:h1.mega "Mega"] [:h1.lan "LAN"]])
 
 (defn my-status [current-player all-players]
-      (let [me (first (filter #(= (:id %) current-player) all-players))]
+      (let [me (first (filter #(= (:id %) current-player) all-players))
+            free (= (:status me) "free")
+            soon (= (:status me) "soon")
+            busy (= (:status me) "busy")
+            away (= (:status me) "away")]
            [:div.my-status
             [:div.name
              [:span (str "you are " (:name me) " ")]
              [:span.link {:on-click #(swap! state/internal-state (fn [s] (dissoc s "player-uuid")))}
               "(change user)"]]
             [:div.statuses
-             [:div.free.active [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
-             [:div.soon [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
-             [:div.busy [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
-             [:div.away [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
+             [:div.free {:class [(when free "active")]} [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
+             [:div.soon {:class [(when soon "active")]} [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
+             [:div.busy {:class [(when busy "active")]} [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
+             [:div.away {:class [(when away "active")]} [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
             [:div.status-age
              [:span "status set x minutes ago "]
              [:span.link "(refresh now)"]]]))
@@ -93,16 +97,20 @@
 (defn login [all-players]
       (let [a-name (r/atom "")
             a-email (r/atom "")
-            a-notes (r/atom "")]
+            a-notes (r/atom "")
+            a-sel-id (r/atom "")]
            (fn []
                [:div.modal
                 [:h1 "Log in or create user"]
                 [:p "The MegaLAN site operates with the 'Google spreadsheet' permission model: everyone is allowed to do everything." [:br] "Please take care."]
                 [:p "Select your name from the drop-down list below, or create a new user."]
                 [:h2 "Select existing user"]
-                [:select#user-uuid
+                [:select#user-uuid {:on-change (fn [e] (js/console.log e) (reset! a-sel-id (clojure.string.split (.. e -target -value) #",")))}
+                 [:option "Choose a user"]
                  (map #(do ^{:key (:id %)}
-                           [:option {:value (:id %)} (:name %)]) all-players)]
+                           [:option {:value (str (:id %) "," (:name %))} (:name %)]) all-players)]
+                [:button {:on-click #(when (not (empty? @a-sel-id)) (swap! state/internal-state (fn [s] (assoc-in s ["player-uuid"] (first @a-sel-id)))))}
+                 (if (empty? @a-sel-id) "(Choose a user)" (str "Log in as " (second @a-sel-id)))]
                 [:h2 "Create user"]
                 [:div.row
                  [:img.demo-av {:src (str "https://www.gravatar.com/avatar/" (when (not (empty? @a-email)) (.md5 js/window @a-email)))}]
@@ -117,7 +125,7 @@
                               :value       @a-notes
                               :on-change   #(reset! a-notes (.. % -target -value))}]
                   [:button {:on-click #(let [player (state/create-player @a-name @a-email @a-notes)]
-                                            (.preventDefault %)
+                                            ;(.preventDefault %)
                                             (swap! state/internal-state (fn [s]
                                               (assoc-in s ["player-uuid"] (:id player))))
                                             (put! state-update-chan [[:players (:id player)] player]))}
