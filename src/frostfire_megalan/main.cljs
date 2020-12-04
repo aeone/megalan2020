@@ -59,19 +59,21 @@
 (defn header []
       [:div.main-heading [:h1.mega "Mega"] [:h1.lan "LAN"]])
 
-(defn my-status []
-      [:div.my-status
-       [:div.name
-        [:span "you are Jane Doe "]
-        [:span.link "(change user)"]]
-       [:div.statuses
-        [:div.free.active [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
-        [:div.soon [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
-        [:div.busy [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
-        [:div.away [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
-       [:div.status-age
-        [:span "status set x minutes ago "]
-        [:span.link "(refresh now)"]]])
+(defn my-status [current-player all-players]
+      (let [me (first (filter #(= (:id %) current-player) all-players))]
+           [:div.my-status
+            [:div.name
+             [:span (str "you are " (:name me) " ")]
+             [:span.link {:on-click #(swap! state/internal-state (fn [s] (dissoc s "player-uuid")))}
+              "(change user)"]]
+            [:div.statuses
+             [:div.free.active [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
+             [:div.soon [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
+             [:div.busy [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
+             [:div.away [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
+            [:div.status-age
+             [:span "status set x minutes ago "]
+             [:span.link "(refresh now)"]]]))
 
 (defn lobbies [ls all-players]
       [:div.lobbies
@@ -116,13 +118,9 @@
                               :on-change   #(reset! a-notes (.. % -target -value))}]
                   [:button {:on-click #(let [player (state/create-player @a-name @a-email @a-notes)]
                                             (.preventDefault %)
-                                            (.log js/console player)
                                             (swap! state/internal-state (fn [s]
-                                              (assoc-in s ["player-uuid"] (:id player))
-                                            ;(assoc-in s ["player-uuid"] (:id player))
-                                            ))
-                                            ;(put! state-update-chan [[:players (:id player)] player])
-                                            )}
+                                              (assoc-in s ["player-uuid"] (:id player))))
+                                            (put! state-update-chan [[:players (:id player)] player]))}
                    "Create & log in as user"]]]
                 ])))
 
@@ -133,15 +131,18 @@
 
 ; container
 (defn container [state internal-state]
-      (let [all-players (vals (:players @state))
+      (let [pending-load (:pending-load @state)
+            all-players (vals (:players @state))
             ls (vals (:lobbies @state))
             gs (vals (:games @state))
-            on-login-screen (not (contains? @internal-state "player-uuid"))]
+            on-login-screen (not (contains? @internal-state "player-uuid"))
+            current-player (get @internal-state "player-uuid")]
            (cond
+             pending-load [:div.modal [:h1 "Loading from firebase."]]
              on-login-screen [login all-players]
              :else [:<>
                       [header]
-                      [my-status]
+                      [my-status current-player all-players]
                       ;[:span.test "test"]
                       [lobbies ls all-players]
                       [games gs all-players]])))

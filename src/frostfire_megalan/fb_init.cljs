@@ -14,10 +14,10 @@
       [path]
       (.ref (.database firebase) (clojure.string.join "/" path)))
 
-;(defn root-ref []
-;      (-> firebase
-;          (.database)
-;          (.ref)))
+(defn root-ref []
+      (-> firebase
+          (.database)
+          (.ref)))
 
 (defn save!
       [path value]
@@ -37,15 +37,22 @@
 ;           (js/console.log value)
 ;           (.set root-ref value)))
 
-(defn db-subscribe
-      [path]
-      (let [path (clj->js path)]
-           (.on (db-ref path)
-                "value"
-                (fn [snapshot]
-                    (put! from-fb (js->clj (.val snapshot) :keywordize-keys true))
-                    ;(reset! state/counter (js->clj (.val snapshot) :keywordize-keys true))
-                    ))))
+;(defn db-subscribe
+;      [path]
+;      (let [path (clj->js path)]
+;           (.on (db-ref path)
+;                "value"
+;                (fn [snapshot]
+;                    (put! from-fb (js->clj (.val snapshot) :keywordize-keys true))
+;                    ;(reset! state/counter (js->clj (.val snapshot) :keywordize-keys true))
+;                    ))))
+
+(defn db-subscribe []
+      (.on (root-ref)
+           "value"
+           (fn [snapshot]
+               (put! from-fb (js->clj (.val snapshot) :keywordize-keys true)))))
+
 
 (defn firebase-init
       []
@@ -54,7 +61,7 @@
              :authDomain  "megalan-dabm.firebaseapp.com"
              :databaseURL "https://megalan-dabm.firebaseio.com"
              :projectId   "megalan-dabm"})
-      ;(db-subscribe [])
+      (db-subscribe)
       ;(reset! database (.database firebase))
       )
 
