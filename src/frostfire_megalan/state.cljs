@@ -45,13 +45,23 @@
 ;                     (reduce #(update-in %1 [:lobbies (:id %2) :players] dissoc player-uuid) s lobbies-im-in)
 ;                     (assoc-in s [:lobbies lobby-uuid :players player-uuid] true)))))
 
+(defn in?
+      "true if coll contains elm"
+      [coll elm]
+      (some #(= elm %) coll))
+
 (defn add-self-to-lobby-update-gen [player-uuid lobby-uuid]
       (fn [state]
-          (let [lobbies (:lobbies state)
-                lobbies-im-in (filter #(contains? (keys (:players %)) player-uuid) lobbies)]
+          (let [lobbies (vals (:lobbies state))
+                lobbies-im-in (filter #(in? (keys (:players %)) player-uuid) lobbies)
+                player-key (keyword player-uuid)
+                lobby-key (keyword lobby-uuid)
+                ]
+               (js/console.log "adding self to lobby")
+               (js/console.log [lobbies lobbies-im-in])
                (concat
-                 [[[:lobbies lobby-uuid :players player-uuid] true]]
-                 (map #([[:lobbies (:id %) :players player-uuid]]) lobbies-im-in)))))
+                 [[[:lobbies lobby-key :players player-key] true]]
+                 (map #([[:lobbies (:id %) :players player-key]]) lobbies-im-in)))))
 
 ; test data generator
 ;(defn- letters [count]
