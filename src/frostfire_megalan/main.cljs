@@ -52,7 +52,10 @@
                  (if (empty? players)
                    "(No players in lobby)"
                    (map #(do ^{:key (:id %)}
-                             [:div.player {:class [(:status %)]}
+                             [:div.player {:class         [(:status %)]
+                                           :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
+                                           :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
+                                           }
                               [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}]
                               [:span.name {:key (:id %)} (:name %)]]) players))
                  (if im-in-lobby
@@ -95,11 +98,19 @@
              [:p (str "high priority players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
              (if (empty? hi-players)
                [:p.dim "(no high priority players)"]
-               (map #(vector :p.player {:key (:id %) :class [(:status %)]} (player %)) hi-players))
+               (map #(vector :p.player {:key (:id %)
+                                        :class [(:status %)]
+                                        :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
+                                        :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
+                                        } (player %)) hi-players))
              [:p (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
              (if (empty? players)
                [:p.dim "(no potential players)"]
-               (map #(vector :p.player {:key (:id %) :class [(:status %)]} (player %)) players))
+               (map #(vector :p.player {:key (:id %)
+                                        :class [(:status %)]
+                                        :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
+                                        :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
+                                        } (player %)) players))
              (cond
                im-high-priority [:<>
                                  [:button {:on-click add-plyr-listener} "Switch yourself to normal priority"]
@@ -241,6 +252,31 @@
                [:button {:on-click #(swap! state/internal-state (fn [s] (dissoc s "modal")))}
                 "Nope, cancel, completely abandon this"]])))
 
+(defn tooltip [p]
+      (let [
+            {:keys [name gravatar-email notes status status-set]} p
+            ;name (get p "name")
+            ;gravatar-email (get p "gravatar-email")
+            ;notes (get p "notes")
+            ;status (get p "status")
+            ;status-set (get p "status-set")
+            now (.now js/Date)
+            status-age-mins (js/Math.floor (/ (- now status-set) (* 1000 60)))]
+           ;(js/console.log "tooltip!")
+           ;(js/console.log p)
+           ;(js/console.log (:name p))
+           ;(js/console.log (get p "name"))
+           ;(js/console.log (:gravatar-email (js->clj p)))
+           [:div.tooltip
+            (when gravatar-email
+              [:img.avatar.big {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window gravatar-email))}])
+            [:div.contents
+             [:h3 name]
+             [:p.dim (str "status: " status " for " status-age-mins " min.")]
+             [:div.notes [:> ReactMarkdown {:source notes}]]]
+            ]
+           ))
+
 ; container
 (defn container [state internal-state]
       (let [pending-load (:pending-load @state)
@@ -249,7 +285,8 @@
             gs (vals (:games @state))
             on-login-screen (not (contains? @internal-state "player-uuid"))
             on-create-game-screen (get @internal-state "modal")
-            current-player (get @internal-state "player-uuid")]
+            current-player (get @internal-state "player-uuid")
+            player-tooltip (get @internal-state "player-tooltip")]
            (cond
              pending-load [:div.modal
                            [:h1 "Reticulating splines"]
@@ -260,4 +297,6 @@
                       [header]
                       [my-status current-player all-players]
                       [lobbies ls all-players current-player]
-                      [games gs all-players current-player]])))
+                      [games gs all-players current-player]
+                      (when player-tooltip
+                          [tooltip player-tooltip])])))
