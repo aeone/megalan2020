@@ -9,6 +9,8 @@
       {:id             id
        :name           name
        :gravatar-email gravatar-email
+       :status         "away"
+       :status-set     (.now js/Date)
        :notes          notes})
 
 (defn lobby [id game notes players]
@@ -23,6 +25,10 @@
        :notes      notes
        :hi-players hi-players
        :players    players})
+
+; updaters
+(defn create-player [name gravatar-email notes]
+      (player (str (random-uuid)) name gravatar-email notes))
 
 ; test data generator
 (defn- letters [count]
@@ -74,7 +80,17 @@
 
 ; state & updates
 (defonce state (r/atom (initial-state)))
-(def internal-state (r/atom {}))
+(def internal-state (r/atom (-> (.-localStorage js/window)
+                                (.getItem "state")
+                                (->> (.parse js/JSON))
+                                (js->clj)
+                                (or {}))))
+(ratom/run! (.setItem (.-localStorage js/window)
+                      "state"
+                      (.stringify js/JSON (clj->js @internal-state))))
+;(ratom/run! (-> @internal-state
+;                (clj->js)
+;                #(.setItem (.-localStorage js/window) "state" %)))
 
 (def state-update-chan (chan))
 

@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Oxygen:wght@300;700&display=swap');
 
 :root {
+    --bg-tone-0: #111111ee;
     --bg-tone-1: #111111aa;
     --bg-tone-2: #222222aa;
     --bg-tone-3: #333333aa;
@@ -21,14 +22,52 @@
 }
 
 body {
+    background: url('/bg-2.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    /*
     background-color: var(--bg-tone-1);
     background-image: url('/bg-2.jpg');
     background-size: cover;
     background-position: center;
+    */
     /* color: #cde; */
     color: var(--text);
     font-family: 'Oxygen', sans-serif;
     margin: 0;
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-tone-0);
+    padding: 2rem;
+}
+
+.modal > *, .col > * {
+    margin-bottom: 0.5rem;
+}
+.modal .row {
+    display: flex;
+    flex-direction: row;
+}
+.modal .col {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.modal h2 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.demo-av {
+    height: 10rem;
+    width: 10rem;
+    margin-right: 1rem;
 }
 
 .link {
@@ -97,19 +136,20 @@ body {
     border: solid 0px;
     border-bottom-width: 1px;
 }
-.active .name {
+.active .name, .statuses > div:hover > .name {
     border-bottom-width: 5px;
 }
-.free.active .name, .free:hover .name {
+
+.free .name, .free:hover .name {
     border-color: var(--green);
 }
-.soon.active .name, .soon:hover .name {
+.soon .name, .soon:hover .name {
     border-color: var(--yellow);
 }
-.busy.active .name, .busy:hover .name {
+.busy .name, .busy:hover .name {
     border-color: var(--red);
 }
-.away.active .name, .away:hover .name {
+.away .name, .away:hover .name {
     border-color: var(--away-grey);
 }
 

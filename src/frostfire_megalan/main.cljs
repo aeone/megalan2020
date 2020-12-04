@@ -66,9 +66,9 @@
         [:span.link "(change user)"]]
        [:div.statuses
         [:div.free.active [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
-        [:div.soon.active [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
-        [:div.busy.active [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
-        [:div.away.active [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
+        [:div.soon [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
+        [:div.busy [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
+        [:div.away [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
        [:div.status-age
         [:span "status set x minutes ago "]
         [:span.link "(refresh now)"]]])
@@ -87,19 +87,61 @@
        [:div.body
         (map #(game % all-players) gs)]])
 
-(defn container [state internal-state]
-      (let [all-players (vals (:players @state))
-            ls (vals (:lobbies @state))
-            gs (vals (:games @state))]
-           [:<>
-            [header]
-            [my-status]
-            ;[:span.test "test"]
-            [lobbies ls all-players]
-            [games gs all-players]]))
-
 ; modals
+(defn login [all-players]
+      (let [a-name (r/atom "")
+            a-email (r/atom "")
+            a-notes (r/atom "")]
+           (fn []
+               [:div.modal
+                [:h1 "Log in or create user"]
+                [:p "The MegaLAN site operates with the 'Google spreadsheet' permission model: everyone is allowed to do everything." [:br] "Please take care."]
+                [:p "Select your name from the drop-down list below, or create a new user."]
+                [:h2 "Select existing user"]
+                [:select#user-uuid
+                 (map #(do ^{:key (:id %)}
+                           [:option {:value (:id %)} (:name %)]) all-players)]
+                [:h2 "Create user"]
+                [:div.row
+                 [:img.demo-av {:src (str "https://www.gravatar.com/avatar/" (when (not (empty? @a-email)) (.md5 js/window @a-email)))}]
+                 [:div.col
+                  [:input {:placeholder "Your name, as it will be displayed to all users"
+                           :value       @a-name
+                           :on-change   #(reset! a-name (.. % -target -value))}]
+                  [:input {:placeholder "Your email, for Gravatar to supply you with an avatar"
+                           :value       @a-email
+                           :on-change   #(reset! a-email (.. % -target -value))}]
+                  [:textarea {:placeholder "Notes for you, e.g. your discord username, battle.net, steam, switch friend codes, etc."
+                              :value       @a-notes
+                              :on-change   #(reset! a-notes (.. % -target -value))}]
+                  [:button {:on-click #(let [player (state/create-player @a-name @a-email @a-notes)]
+                                            (.preventDefault %)
+                                            (.log js/console player)
+                                            (swap! state/internal-state (fn [s]
+                                              (assoc-in s ["player-uuid"] (:id player))
+                                            ;(assoc-in s ["player-uuid"] (:id player))
+                                            ))
+                                            ;(put! state-update-chan [[:players (:id player)] player])
+                                            )}
+                   "Create & log in as user"]]]
+                ])))
+
 (defn create-game []
       [:div.modal-bg
        [:div.modal
         [:h2 "Create a game"]]])
+
+; container
+(defn container [state internal-state]
+      (let [all-players (vals (:players @state))
+            ls (vals (:lobbies @state))
+            gs (vals (:games @state))
+            on-login-screen (not (contains? @internal-state "player-uuid"))]
+           (cond
+             on-login-screen [login all-players]
+             :else [:<>
+                      [header]
+                      [my-status]
+                      ;[:span.test "test"]
+                      [lobbies ls all-players]
+                      [games gs all-players]])))
