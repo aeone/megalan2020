@@ -72,7 +72,7 @@ body {
 
 .link {
     text-decoration: underline;
-    text-decoration-thickness: 5px;
+    text-decoration-thickness: 3px;
     text-decoration-color: var(--action-tone-3);
 }
 .link:hover {
@@ -284,6 +284,16 @@ h3 {
     border-bottom-width: 5px;
 }
 
+.games .heading {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.games .heading span {
+    margin-bottom: 0.25rem;
+    margin-left: 2rem;
+}
 
 .game {
     min-width: 15rem;

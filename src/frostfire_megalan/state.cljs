@@ -19,9 +19,10 @@
        :notes   notes
        :players players})
 
-(defn game [id name notes hi-players players]
+(defn game [id name notes sponsor hi-players players]
       {:id         id
        :name       name
+       :sponsor    sponsor
        :notes      notes
        :hi-players hi-players
        :players    players})
@@ -29,6 +30,9 @@
 ; updaters
 (defn create-player [name gravatar-email notes]
       (player (str (random-uuid)) name gravatar-email notes))
+
+(defn create-game [name sponsor notes]
+      (game (str (random-uuid)) name notes sponsor [] []))
 
 ;(defn add-self-to-lobby-generator [player-uuid lobby-uuid]
 ;      (fn [state]

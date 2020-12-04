@@ -28,9 +28,10 @@
             [:div.body
              (if (empty? players)
                "(No players in lobby)"
-               (map #(vector :div.player {:class [(:status %)]}
+               (map #(do ^{:key (:id %)}
+                          [:div.player {:class [(:status %)]}
                              [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}]
-                             [:span.name {:key (:id %)} (:name %)]) players))
+                             [:span.name {:key (:id %)} (:name %)]]) players))
              [:button.point {:on-click add-self-listener} "Add self to lobby"]]]))
 
 (defn game [g all-players]
@@ -105,7 +106,9 @@
 (defn games [gs all-players]
       [:div.games
        [:div.heading
-        [:h2 "Game list"]]
+        [:h2 "Game list"]
+        [:span.link "see only games I'm interested in"]
+        [:span.link {:on-click #(swap! state/internal-state (fn [s] (assoc s "modal" "create-game")))} "create a new game"]]
        [:div.body
         (map #(game % all-players) gs)]])
 
@@ -149,9 +152,38 @@
                 ])))
 
 (defn create-game []
-      [:div.modal-bg
-       [:div.modal
-        [:h2 "Create a game"]]])
+      (let [a-name (r/atom "")
+            a-sponsor (r/atom "")
+            a-notes (r/atom "")]
+         (fn []
+              [:div.modal
+               [:h1 "Create a game"]
+               [:h2 "Info"]
+               [:p "For the game notes, specify information like:"]
+               [:ul
+                [:li "Elevator pitch - what kind of game is it, and what kind of person would like it?"]
+                [:li "Number of players supported"]
+                [:li "Number of players ideal"]
+                [:li "Equipment / licenses required (e.g. 'buy on Steam' / 'needs controller' / 'phone only')"]
+                [:li "Any places where licenses can be obtained (e.g. 'copies exist on Softwire Steam accounts')"]]
+
+               [:h2 "Details"]
+               [:input {:placeholder "Name of game"
+                        :value @a-name
+                        :on-change #(reset! a-name (.. % -target -value))}]
+               [:input {:placeholder "If a PC game, name of sponsor certifying the game is Not A Virus"
+                        :value @a-sponsor
+                        :on-change #(reset! a-sponsor (.. % -target -value))}]
+               [:textarea {:placeholder "Game notes (markdown supported)"
+                        :value @a-notes
+                        :on-change #(reset! a-notes (.. % -target -value))}]
+
+               [:button {:on-click #(let [game (state/create-game @a-name @a-sponsor @a-notes)]
+                                         (put! state-update-chan [[:games (:id game)] game])
+                                         (swap! state/internal-state (fn [s] (dissoc s "modal"))))}
+                "Create this game"]
+               [:button {:on-click #(swap! state/internal-state (fn [s] (dissoc s "modal")))}
+                "Nope, cancel, completely abandon this"]])))
 
 ; container
 (defn container [state internal-state]
@@ -160,10 +192,14 @@
             ls (vals (:lobbies @state))
             gs (vals (:games @state))
             on-login-screen (not (contains? @internal-state "player-uuid"))
+            on-create-game-screen (get @internal-state "modal")
             current-player (get @internal-state "player-uuid")]
            (cond
-             pending-load [:div.modal [:h1 "Loading from firebase."]]
+             pending-load [:div.modal
+                           [:h1 "Reticulating splines"]
+                           [:h2 "(loading data from firebase, please wait)"]]
              on-login-screen [login all-players]
+             on-create-game-screen [create-game]
              :else [:<>
                       [header]
                       [my-status current-player all-players]
