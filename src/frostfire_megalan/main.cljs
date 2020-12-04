@@ -50,7 +50,7 @@
                 [lobby-notes id notes]
                 [:div.body
                  (if (empty? players)
-                   "(No players in lobby)"
+                   [:p "(No players in lobby)"]
                    (map #(do ^{:key (:id %)}
                              [:div.player {:class         [(:status %)]
                                            :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
@@ -170,14 +170,20 @@
        [:div.body
         (map #(lobby % all-players my-uuid) ls)]])
 
-(defn games [gs all-players my-uuid]
-      [:div.games
-       [:div.heading
-        [:h2 "Game list"]
-        [:span.link "see only games I'm interested in"]
-        [:span.link {:on-click #(swap! state/internal-state (fn [s] (assoc s "modal" "create-game")))} "create a new game"]]
-       [:div.body
-        (map #(game % all-players my-uuid) gs)]])
+(defn games [gs all-players my-uuid filtering]
+      (let [gs (cond filtering (filter #(state/in? (map name (concat (keys (:hi-players %)) (keys (:players %)))) my-uuid) gs)
+                     :else gs)]
+           [:div.games
+            [:div.heading
+             [:h2 "Game list"]
+             (if filtering
+               [:span.link {:on-click #(swap! state/internal-state (fn [s] (assoc s "filter-games" false)))}
+                "see all games in the game list"]
+               [:span.link {:on-click #(swap! state/internal-state (fn [s] (assoc s "filter-games" true)))}
+                "see only games I'm interested in"])
+             [:span.link {:on-click #(swap! state/internal-state (fn [s] (assoc s "modal" "create-game")))} "create a new game"]]
+            [:div.body
+             (map #(game % all-players my-uuid) gs)]]))
 
 ; modals
 (defn login [all-players]
@@ -286,7 +292,8 @@
             on-login-screen (not (contains? @internal-state "player-uuid"))
             on-create-game-screen (get @internal-state "modal")
             current-player (get @internal-state "player-uuid")
-            player-tooltip (get @internal-state "player-tooltip")]
+            player-tooltip (get @internal-state "player-tooltip")
+            filtering-games (get @internal-state "filter-games")]
            (cond
              pending-load [:div.modal
                            [:h1 "Reticulating splines"]
@@ -297,6 +304,6 @@
                       [header]
                       [my-status current-player all-players]
                       [lobbies ls all-players current-player]
-                      [games gs all-players current-player]
+                      [games gs all-players current-player filtering-games]
                       (when player-tooltip
                           [tooltip player-tooltip])])))

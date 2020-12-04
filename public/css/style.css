@@ -11,7 +11,8 @@
     --accent-tone-1: #1d1959;
     --accent-tone-2: #363377;
     --accent-tone-3: #585594;
-    --action-tone-1: #0e553c;
+    /*--action-tone-1: #0e553c;*/
+    --action-tone-1: #009688;
     --action-tone-2: #267257;
     --action-tone-3: #478e75;
     /*--green: #3ad; */
@@ -180,6 +181,10 @@ body {
     clear: both;
 }
 
+.lobby .body p {
+    margin-top: 0;
+}
+
 /*.test {
     margin: 1rem;
     background-color: #222222aa;
@@ -326,7 +331,8 @@ h3 {
 
 button {
     width: 100%;
-    background-color: var(--bg-tone-2);
+    /* background-color: var(--bg-tone-2); */
+    background-color: var(--action-tone-1);
     color: #eee;
     margin-top: 0.5rem;
     border-style: solid;
