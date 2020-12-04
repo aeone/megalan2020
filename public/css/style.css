@@ -10,7 +10,7 @@
     --text-low: #777;
     --accent-tone-1: #1d1959;
     --accent-tone-2: #363377;
-    --accent-tone-3: #585594;
+    --accent-tone-3: #6966a5;
     --action-tone-1: #009688;
     --action-tone-2: #267257;
     --action-tone-3: #478e75;
@@ -18,6 +18,10 @@
     --yellow: #da3;
     --red: #b46;
     --away-grey: #aad;
+}
+
+a {
+    color: var(--accent-tone-3);
 }
 
 body {
