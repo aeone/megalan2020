@@ -13,11 +13,12 @@
        :status-set     (.now js/Date)
        :notes          notes})
 
-(defn lobby [id game notes players]
+(defn lobby [id game notes players created-at]
       {:id      id
        :game    game
        :notes   notes
-       :players players})
+       :players players
+       :created-at created-at})
 
 (defn game [id name notes sponsor hi-players players created-at]
       {:id         id
@@ -29,6 +30,9 @@
        :created-at created-at})
 
 ; updaters
+(defn create-lobby [game]
+      (lobby (str (random-uuid)) game "" {} (.now js/Date)))
+
 (defn create-player [name gravatar-email notes]
       (player (str (random-uuid)) name gravatar-email notes))
 

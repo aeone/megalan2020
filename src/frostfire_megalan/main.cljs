@@ -74,10 +74,8 @@
                         [_ (js/confirm
                              (str "Do you want to create a lobby for " name "?"))]
                         (js/console.log (str "Creating lobby for " name))
-                        (let [uuid (str (random-uuid))]
-                             (put! state-update-chan
-                                   [[:lobbies uuid]
-                                    (state/lobby uuid name "" {})])))
+                        (let [l (state/create-lobby name)]
+                             (put! state-update-chan [[:lobbies (keyword (:id l))] l])))
             im-high-priority (seq (filter #(= (:id %) my-uuid) hi-players))
             im-potential-plyr (seq (filter #(= (:id %) my-uuid) players))
             add-high-listener #(do

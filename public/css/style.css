@@ -246,20 +246,25 @@ h3 {
     padding: 1rem;
 }
 
-.lobby .player {
+.lobby .players {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    flex-wrap: wrap;
+    max-width: 25rem;
+    margin-bottom: 1rem;
+    justify-content: space-between;
 }
 
-.lobby .players {
-    margin-bottom: 1rem;
+.lobby .player {
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .player .avatar {
     width: 3rem;
     height: 3rem;
-    margin-right: 1rem;
     border-radius: 50%;
     border: solid 3px;
 }
@@ -305,6 +310,11 @@ h3 {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.game .player {
+    margin: 0.5rem;
 }
 
 .dim {
