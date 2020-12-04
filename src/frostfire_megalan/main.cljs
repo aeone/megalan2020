@@ -6,6 +6,26 @@
             ["react-markdown" :as ReactMarkdown]))
 
 ; helpers
+(defn lobby-notes [id notes]
+      (let [a-notes-active (r/atom false)
+            a-notes (r/atom "")]
+           (fn [id notes]
+               [:div.mid
+                (if @a-notes-active
+                  [:<>
+                   [:textarea {:placeholder "Write lobby notes - e.g. 'we're in discord voice channel megalan-amethyst'"
+                               :value       @a-notes
+                               :on-change   #(reset! a-notes (.. % -target -value))}]
+                   [:button {:on-click #(do (put! state-update-chan [[:lobbies id :notes] @a-notes])
+                                            (reset! a-notes-active false))}
+                    "Save"]]
+                  [:<>
+                   [:span (if (empty? notes) "(No notes entered)" [:> ReactMarkdown {:source notes}])]
+                   [:i.fal.fa-edit.fa-lg.edit-icon.point.link {:on-click
+                                                               #(do (reset! a-notes notes)
+                                                                    (reset! a-notes-active true))}]])]
+               )))
+
 (defn lobby [l all-players my-uuid]
       (let [{:keys [id game notes players]} l
             players (filter #((set (map name (keys players))) (:id %)) all-players)
@@ -17,26 +37,27 @@
             add-self-listener #(let [update-func (state/add-self-to-lobby-update-gen my-uuid id)]
                                     (put! state-mod-chan [update-func]))
             rm-self-listener #(put! state-update-chan [[:lobbies id :players (keyword my-uuid)]])
-            im-in-lobby ((set (map :id players)) my-uuid)]
-           ^{:key id}
-           [:div.lobby
-            [:div.head
-             [:h3 "Lobby: " game]
-             [:i.fal.fa-times.fa-lg.close-icon.point.link
-              {:on-click kill-listener}]]
-            [:div.mid
-             [:span (if (empty? notes) "(No notes entered)" notes)]
-             [:i.fal.fa-edit.fa-lg.edit-icon.point.link]]
-            [:div.body
-             (if (empty? players)
-               "(No players in lobby)"
-               (map #(do ^{:key (:id %)}
-                          [:div.player {:class [(:status %)]}
-                             [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}]
-                             [:span.name {:key (:id %)} (:name %)]]) players))
-             (if im-in-lobby
-                [:button {:on-click rm-self-listener}  "Remove self from lobby"]
-                [:button {:on-click add-self-listener} "Add self to lobby"])]]))
+            im-in-lobby ((set (map :id players)) my-uuid)
+            a-notes-active (r/atom false)
+            a-notes (r/atom notes)]
+
+               ^{:key id}
+               [:div.lobby
+                [:div.head
+                 [:h3 "Lobby: " game]
+                 [:i.fal.fa-times.fa-lg.close-icon.point.link
+                  {:on-click kill-listener}]]
+                [lobby-notes id notes]
+                [:div.body
+                 (if (empty? players)
+                   "(No players in lobby)"
+                   (map #(do ^{:key (:id %)}
+                             [:div.player {:class [(:status %)]}
+                              [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}]
+                              [:span.name {:key (:id %)} (:name %)]]) players))
+                 (if im-in-lobby
+                   [:button {:on-click rm-self-listener} "Remove self from lobby"]
+                   [:button {:on-click add-self-listener} "Add self to lobby"])]]))
 
 (def cname name)
 
@@ -153,7 +174,7 @@
             a-email (r/atom "")
             a-notes (r/atom "")
             a-sel-id (r/atom "")]
-           (fn []
+           (fn [all-players]
                [:div.modal
                 [:h1 "Log in or create user"]
                 [:p "The MegaLAN site operates with the 'Google spreadsheet' permission model: everyone is allowed to do everything." [:br] "Please take care."]
