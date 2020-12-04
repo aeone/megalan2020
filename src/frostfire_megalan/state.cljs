@@ -53,7 +53,7 @@
 (defn add-self-to-lobby-update-gen [player-uuid lobby-uuid]
       (fn [state]
           (let [lobbies (vals (:lobbies state))
-                lobbies-im-in (filter #(in? (keys (:players %)) player-uuid) lobbies)
+                lobbies-im-in (filter #(in? (map name (keys (:players %))) player-uuid) lobbies)
                 player-key (keyword player-uuid)
                 lobby-key (keyword lobby-uuid)
                 ]
@@ -61,7 +61,7 @@
                (js/console.log [lobbies lobbies-im-in])
                (concat
                  [[[:lobbies lobby-key :players player-key] true]]
-                 (map #([[:lobbies (:id %) :players player-key]]) lobbies-im-in)))))
+                 (map #(vector [:lobbies (:id %) :players player-key]) lobbies-im-in)))))
 
 ; test data generator
 ;(defn- letters [count]
