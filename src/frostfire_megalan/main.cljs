@@ -28,7 +28,9 @@
             [:div.body
              (if (empty? players)
                "(No players in lobby)"
-               (map #(vector :p {:key (:id %)} (:name %)) players))
+               (map #(vector :div.player {:class [(:status %)]}
+                             [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}]
+                             [:span.name {:key (:id %)} (:name %)]) players))
              [:button.point {:on-click add-self-listener} "Add self to lobby"]]]))
 
 (defn game [g all-players]

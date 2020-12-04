@@ -140,16 +140,16 @@ body {
     border-bottom-width: 5px;
 }
 
-.free .name, .free:hover .name {
+.free .name, .free:hover .name, .player.free .name, .lobby .player.free .avatar {
     border-color: var(--green);
 }
-.soon .name, .soon:hover .name {
+.soon .name, .soon:hover .name, .player.soon .name, .lobby .player.soon .avatar {
     border-color: var(--yellow);
 }
-.busy .name, .busy:hover .name {
+.busy .name, .busy:hover .name, .player.busy .name, .lobby .player.busy .avatar {
     border-color: var(--red);
 }
-.away .name, .away:hover .name {
+.away .name, .away:hover .name, .player.away .name, .lobby .player.away .avatar {
     border-color: var(--away-grey);
 }
 
@@ -264,6 +264,26 @@ h3 {
     background-color: var(--bg-tone-1);
     padding: 1rem;
 }
+
+.lobby .player {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.lobby .player .avatar {
+    width: 3rem;
+    height: 3rem;
+    margin-right: 1rem;
+    border-radius: 50%;
+    border: solid 2px;
+}
+
+.player .name {
+    border: solid 0px;
+    border-bottom-width: 5px;
+}
+
 
 .game {
     min-width: 15rem;
