@@ -87,7 +87,7 @@
                          :on-click #(put! state-update-chan [[:players id "status"] "away"])}
               [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
             [:div.status-age
-             [:span (str "status set " status-age-mins " minutes ago ")]
+             [:span (str "status set " status-age-mins " minute" (when (not= 1 status-age-mins) "s") " ago ")]
              [:span.link {:on-click #(put! state-update-chan [[:players id :status-set] (.now js/Date)])}
               "(refresh now)"]]]))
 
