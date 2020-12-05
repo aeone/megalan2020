@@ -308,16 +308,20 @@
                 "Nope, cancel this (discard changes)"]])))
 
 (defn tooltip [p]
-      (let [
-            {:keys [name gravatar-email notes status status-set]} p
+      (let [{:keys [name gravatar-email notes status status-set]} p
+            full-status (condp = status
+                               "free" "free (available to play)"
+                               "soon" "soon (soon available to play)"
+                               "busy" "busy (unavailable to play)"
+                               "away" "away (unavailable to play)")
             now (.now js/Date)
             status-age-mins (js/Math.floor (/ (- now status-set) (* 1000 60)))]
-           [:div.tooltip
+           [:div.tooltip {:class [status]}
             (when gravatar-email
               [:img.avatar.big {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window gravatar-email))}])
             [:div.contents
              [:h3 name]
-             [:p.dim (str "status: " status " for " status-age-mins " min.")]
+             [:p.dim "status: " [:span.st full-status] (str " since " status-age-mins " min" (when (not= 1 status-age-mins) "s") " ago.")]
              [:div.notes [:> ReactMarkdown {:source notes}]]]
             ]
            ))
