@@ -185,7 +185,8 @@
 
 (defn games [gs all-players my-uuid filtering]
       (let [gs (cond filtering (filter #(state/in? (map name (concat (keys (:hi-players %)) (keys (:players %)))) my-uuid) gs)
-                     :else gs)]
+                     :else gs)
+            gs (sort-by (juxt (comp - :created-at) :name) gs)]
            [:div.games
             [:div.heading
              [:h2 "Game list"]
