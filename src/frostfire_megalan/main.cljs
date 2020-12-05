@@ -177,11 +177,12 @@
               "(refresh now)"]]]))
 
 (defn lobbies [ls all-players my-uuid]
-      [:div.lobbies
-       [:div.heading
-        [:h2 "Open game lobbies"]]
-       [:div.body
-        (map #(lobby % all-players my-uuid) ls)]])
+      (let [ls (sort-by (juxt (comp - :created-at) :name) ls)]
+           [:div.lobbies
+            [:div.heading
+             [:h2 "Open game lobbies"]]
+            [:div.body
+             (map #(lobby % all-players my-uuid) ls)]]))
 
 (defn games [gs all-players my-uuid filtering]
       (let [gs (cond filtering (filter #(state/in? (map name (concat (keys (:hi-players %)) (keys (:players %)))) my-uuid) gs)
