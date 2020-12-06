@@ -108,9 +108,17 @@ body {
     text-align: center;
 }
 
+@media screen and (max-width: 767px) {
+    .my-status {
+        margin-top: 7rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
 .statuses {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .statuses div {
