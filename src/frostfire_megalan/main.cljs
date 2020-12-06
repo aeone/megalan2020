@@ -56,7 +56,7 @@
                     (map #(do ^{:key (:id %)}
                               [:div.player {:class         [(:status %)]
                                             :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
-                                            :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
+                                            :on-mouse-out  (fn [] (js/setTimeout (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip")))) 5000))
                                             }
                                [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}]
                                [:span.name {:key (:id %)} (:name %)]]) players)])
@@ -104,7 +104,7 @@
                 (map #(vector :p.player {:key           (:id %)
                                          :class         [(:status %)]
                                          :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
-                                         :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
+                                         :on-mouse-out  (fn [] (js/setTimeout (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip")))) 5000))
                                          } (player %)) hi-players)])
              [:h4 (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
              (if (empty? players)
@@ -113,7 +113,7 @@
                 (map #(vector :p.player {:key           (:id %)
                                          :class         [(:status %)]
                                          :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
-                                         :on-mouse-out  (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip"))))
+                                         :on-mouse-out  (fn [] (js/setTimeout (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip")))) 5000))
                                          } (player %)) players)])
              (cond
                im-high-priority [:<>
