@@ -63,8 +63,14 @@
                    [:div.players
                     (map #(do ^{:key (:id %)}
                               [:div.player {:class         [(:status %)]
-                                            :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
-                                            :on-mouse-out  (fn [] (js/setTimeout (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip")))) 5000))
+                                            :on-click      (fn [] (swap! state/internal-state
+                                                                         (fn [s] (if (get s "pin-tooltip")
+                                                                                   (dissoc s "pin-tooltip")
+                                                                                   (assoc s "pin-tooltip" true)))))
+                                            :on-mouse-over (fn [] (swap! state/internal-state
+                                                                         (fn [s] (assoc (assoc s "show-tooltip" true) "player-tooltip" %))))
+                                            :on-mouse-out  (fn [] (swap! state/internal-state
+                                                                         (fn [s] (dissoc s "show-tooltip"))))
                                             }
                                [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}]
                                [:span.name {:key (:id %)} (:name %)]]) players)])
@@ -113,8 +119,14 @@
                [:div.players
                 (map #(vector :p.player {:key           (:id %)
                                          :class         [(:status %)]
-                                         :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
-                                         :on-mouse-out  (fn [] (js/setTimeout (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip")))) 5000))
+                                         :on-click      (fn [] (swap! state/internal-state
+                                                                      (fn [s] (if (get s "pin-tooltip")
+                                                                                (dissoc s "pin-tooltip")
+                                                                                (assoc s "pin-tooltip" true)))))
+                                         :on-mouse-over (fn [] (swap! state/internal-state
+                                                                      (fn [s] (assoc (assoc s "show-tooltip" true) "player-tooltip" %))))
+                                         :on-mouse-out  (fn [] (swap! state/internal-state
+                                                                      (fn [s] (dissoc s "show-tooltip"))))
                                          } (player %)) hi-players)])
              [:h4 (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
              (if (empty? players)
@@ -122,8 +134,14 @@
                [:div.players
                 (map #(vector :p.player {:key           (:id %)
                                          :class         [(:status %)]
-                                         :on-mouse-over (fn [] (swap! state/internal-state (fn [s] (assoc s "player-tooltip" %))))
-                                         :on-mouse-out  (fn [] (js/setTimeout (fn [] (swap! state/internal-state (fn [s] (dissoc s "player-tooltip")))) 5000))
+                                         :on-click      (fn [] (swap! state/internal-state
+                                                                      (fn [s] (if (get s "pin-tooltip")
+                                                                                (dissoc s "pin-tooltip")
+                                                                                (assoc s "pin-tooltip" true)))))
+                                         :on-mouse-over (fn [] (swap! state/internal-state
+                                                                      (fn [s] (assoc (assoc s "show-tooltip" true) "player-tooltip" %))))
+                                         :on-mouse-out  (fn [] (swap! state/internal-state
+                                                                      (fn [s] (dissoc s "show-tooltip"))))
                                          } (player %)) players)])
              (cond
                im-high-priority [:<>
@@ -351,6 +369,8 @@
             editing-game (get @internal-state "edit-game")
             game-being-edited (first (filter #(= (:id %) editing-game) gs))
             current-player (get @internal-state "player-uuid")
+            show-player-tooltip (or (get @internal-state "show-tooltip")
+                                    (get @internal-state "pin-tooltip"))
             player-tooltip (get @internal-state "player-tooltip")
             filtering-games (get @internal-state "filter-games")]
            (cond
@@ -366,5 +386,5 @@
                       [my-status current-player all-players]
                       [lobbies ls all-players current-player]
                       [games gs all-players current-player filtering-games]
-                      (when player-tooltip
+                      (when show-player-tooltip
                           [tooltip player-tooltip])])))
