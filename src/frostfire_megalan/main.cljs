@@ -306,7 +306,8 @@
                                            (put! state-update-chan [[:games (:id game)] game])
                                            (swap! state/internal-state (fn [s] (dissoc s "modal"))))}
                   "Create this game"])
-               [:button {:on-click #(swap! state/internal-state (fn [s] (dissoc s "modal")))}
+               [:button {:on-click #(do (swap! state/internal-state (fn [s] (dissoc s "modal")))
+                                        (swap! state/internal-state (fn [s] (dissoc s "edit-game"))))}
                 "Nope, cancel this (discard changes)"]])))
 
 (defn tooltip [p]
