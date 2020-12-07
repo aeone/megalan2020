@@ -27,9 +27,17 @@
                                                                     (reset! a-notes-active true))}]])]
                )))
 
+(defn p-sort-priority [p]
+      (case (:status p)
+            "free" 1
+            "soon" 2
+            "busy" 3
+            "away" 4))
+
 (defn lobby [l all-players my-uuid]
       (let [{:keys [id game notes players]} l
             players (filter #((set (map name (keys players))) (:id %)) all-players)
+            players (sort-by p-sort-priority players)
             p-msg (if (empty? players) "no players" (clojure.string.join ", " (map :name players)))
             confirm-msg (str "Do you want to delete the lobby for " game " containing " p-msg "?")
             kill-listener #(when-let [_ (js/confirm confirm-msg)]
@@ -69,7 +77,9 @@
 (defn game [g all-players my-uuid]
       (let [{:keys [id name notes hi-players players]} g
             hi-players (filter #((set (map cname (keys hi-players))) (:id %)) all-players)
+            hi-players (sort-by p-sort-priority hi-players)
             players (filter #((set (map cname (keys players))) (:id %)) all-players)
+            players (sort-by p-sort-priority players)
             listener #(when-let
                         [_ (js/confirm
                              (str "Do you want to create a lobby for " name "?"))]
