@@ -97,7 +97,3 @@
                              (first)
                              (#(assoc % :type :edit)))
            game-is-copy game))))
-
-;; (re-frame/reg-sub
-;;  ::lobby-display
-;;  :<- [::all-players])

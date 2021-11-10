@@ -36,6 +36,10 @@ body {
     padding-bottom: 20rem;
 }
 
+button {
+    font-family: 'Oxygen', sans-serif;
+}
+
 .ml-modal {
     display: flex;
     flex-direction: column;

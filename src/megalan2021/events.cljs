@@ -40,13 +40,6 @@
        (dissoc :loading)
        (assoc-in [:fb :archived-games] data))))
 
-;; (re-frame/reg-event-fx
-;;  ::evt/fb-update-games
-;;  (fn [_ [_ data]]
-;;    (when config/debug? (println "Updating games"))
-;;    {:firebase {:key [:archived-games]
-;;                :val data}}))
-
 (re-frame/reg-event-db
  ::evt/fb-update-players
  (fn [db [_ data]] 
@@ -239,12 +232,7 @@
  ::evt/update-player-status
  (fn [{:keys [db]} [_ status]]
    (let [user-id (get-in db [:local :current-user-id])]
-     {:firebase {:key [:players user-id :status]
-                 :val status}})))
-
-;; (re-frame/reg-event-db
-;;  ::evt/tooltip-pin
-;;  (fn [db _]
-;;    (if (get-in db [:temp :pin-tooltip])
-;;      (update-in db [:temp] dissoc :pin-tooltip)
-;;      (assoc-in [:temp :pin-tooltip] true))))
+     {:firebase-n [{:key [:players user-id :status]
+                    :val status}
+                   {:key [:players user-id :status-set]
+                    :val (.now js/Date)}]})))

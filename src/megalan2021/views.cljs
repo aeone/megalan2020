@@ -134,7 +134,6 @@
 
 (defn lobby [l]
   (let [{:keys [id game notes players]} l
-        _ (js/console.log [id game notes players])
         all-players @(re-frame/subscribe [::subs/all-players])
         my-uuid @(re-frame/subscribe [::subs/current-user-id])
         players (filter #((set (map name (keys players))) (:id %)) all-players)
@@ -213,6 +212,7 @@
       [:span.link {:on-click #(re-frame/dispatch [::evt/start-creating-game])}
        "create a new game"]]
      [:div.body
+      (when (= 0 (count gs)) [:p {:style {:margin-left "1rem"}} "No games are currently listed."])
       (for [g gs]
         ^{:key (:id g)} [game g])]]))
 
@@ -228,7 +228,6 @@
           listener #(when-let
                      [_ (js/confirm
                          (str "Do you want to create a lobby for " name "?"))]
-                      (js/console.log (str "Creating lobby for " name))
                       (re-frame/dispatch [::evt/create-lobby name]))
           im-high-priority (seq (filter #(= (:id %) my-uuid) hi-players))
           im-potential-plyr (seq (filter #(= (:id %) my-uuid) players))
@@ -334,7 +333,6 @@
   (let [show-tooltip (or @tooltip-pinned @tooltip-hover)]
     (if show-tooltip
       (let [{:keys [name gravatar-email notes status status-set]} @tooltip-show
-            _ (println @tooltip-show)
             full-status (condp = status
                           "free" "free (available to play)"
                           "soon" "soon (soon available to play)"
@@ -455,12 +453,10 @@
 
 (defn edit-game-modal []
   (let [game @(re-frame/subscribe [::subs/game-under-edit])
-        _ (js/console.log game)
         game-type (:type game)
         game-id (:id game)
         a-name (r/atom (:name game))
         a-notes (r/atom (:notes game))
-        ;; a-sponsor (r/atom (:sponsor game))
         ]
     (fn []
       [re-com/modal-panel
