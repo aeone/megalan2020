@@ -1,10 +1,20 @@
-.idea
-.calva
-node_modules
-public/js
-out
-.shadow-cljs
-.nrepl-port
-.clj-kondo/.cache
-yarn-error.log
-report.html
+/out/
+/resources/public/js/compiled/
+/target/
+/*-init.clj
+/*.log
+
+# Leiningen
+/.lein-*
+/.nrepl-port
+
+# Node.js dependencies
+/node_modules/
+
+# shadow-cljs cache, port files
+/.shadow-cljs/
+
+# clj-kondo cache
+/.clj-kondo/.cache
+.lsp/.cache
+.calva/output-window/output.calva-repl
