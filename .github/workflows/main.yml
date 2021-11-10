@@ -39,7 +39,7 @@ jobs:
           npm i
         
       - name: Build using shadow-cljs
-        run: npm run-script build
+        run: npm run release
 
       - name: Check output after
         run: ls public/js

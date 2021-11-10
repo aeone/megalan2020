@@ -25,7 +25,8 @@
          game
          archived-games
          archived-game
-         tooltip)
+         tooltip
+         footer-version)
 
 ;; (defn title []
 ;;   (let [name (re-frame/subscribe [::subs/name])
@@ -34,6 +35,10 @@
 ;;      :src   (at)
 ;;      :label (str "Hello from " @name". Git version: " config/version ".")
 ;;      :level :level1]))
+
+(defn footer-version [] 
+  [:div "Git version: " config/version])
+
 
 (def status-poke (r/atom (.now js/Date)))
 (go-loop []
@@ -73,7 +78,8 @@
              [lobbies]
              [games]
              [archived-games]
-             [tooltip]])))
+             [tooltip]
+             [footer-version]])))
 
 (defn main-header [] [:div.main-heading [:h1.mega "Mega"] [:h1.lan "LAN"]])
 (defn my-status [] 
