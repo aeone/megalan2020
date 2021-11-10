@@ -235,6 +235,13 @@
             (assoc-in [:local :editing] :game)
             (assoc-in [:local :editing-game] {:type :copy :name name :notes notes}))}))
 
+(re-frame/reg-event-fx
+ ::evt/update-player-status
+ (fn [{:keys [db]} [_ status]]
+   (let [user-id (get-in db [:local :current-user-id])]
+     {:firebase {:key [:players user-id :status]
+                 :val status}})))
+
 ;; (re-frame/reg-event-db
 ;;  ::evt/tooltip-pin
 ;;  (fn [db _]

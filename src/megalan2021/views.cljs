@@ -105,16 +105,16 @@
        "(change user)"]]
      [:div.statuses
       [:div.free {:class    [(when free "active")]
-                  :on-click (comment #(do (refresh) (put! state-update-chan [[:players id "status"] "free"])))}
+                  :on-click #(re-frame/dispatch [::evt/update-player-status "free"])}
        [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
       [:div.soon {:class [(when soon "active")]
-                  :on-click (comment #(do (refresh) (put! state-update-chan [[:players id "status"] "soon"])))}
+                  :on-click #(re-frame/dispatch [::evt/update-player-status "soon"])}
        [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
       [:div.busy {:class [(when busy "active")]
-                  :on-click (comment #(do (refresh) (put! state-update-chan [[:players id "status"] "busy"])))}
+                  :on-click #(re-frame/dispatch [::evt/update-player-status "busy"])}
        [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
       [:div.away {:class [(when away "active")]
-                  :on-click (comment #(do (refresh) (put! state-update-chan [[:players id "status"] "away"])))}
+                  :on-click #(re-frame/dispatch [::evt/update-player-status "away"])}
        [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
      [:div.status-age.dim
       [:span (str "status set " status-age-mins " minute" (when (not= 1 status-age-mins) "s") " ago ")]
