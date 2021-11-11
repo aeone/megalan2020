@@ -142,6 +142,10 @@ button {
     border-bottom-width: 5px;
 }
 
+.player .avatar.seen-ages-ago {
+    border-style: dashed;
+}
+
 .free .name, .free:hover .name, .player.free .name, .player.free .avatar, .ml-tooltip.free {
     border-color: var(--green);
 }

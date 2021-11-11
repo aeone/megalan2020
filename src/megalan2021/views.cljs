@@ -25,6 +25,7 @@
          game
          archived-games
          archived-game
+         player
          tooltip
          footer-version)
 
@@ -216,6 +217,17 @@
       (for [g gs]
         ^{:key (:id g)} [game g])]]))
 
+(defn player [p]
+  (let [not-seen-recently (> (- (.now js/Date) (:status-set p)) (* 8 60 60 1000))]
+    [:p.player
+     {:key           (:id p)
+      :class         [(:status p)]
+      :on-click      (fn [] (swap! tooltip-pinned not @tooltip-pinned))
+      :on-mouse-over (fn [] (reset! tooltip-hover true) (reset! tooltip-show p))
+      :on-mouse-out  (fn [] (reset! tooltip-hover false))}
+     [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email p)))
+                   :class (when not-seen-recently "seen-ages-ago")}]]))
+
 (defn game [g]
   (fn [g]
     (let [{:keys [id name notes hi-players players]} g
@@ -234,7 +246,8 @@
           add-high-listener #(re-frame/dispatch [::evt/update-game-playing-status id :high-pri])
           add-plyr-listener #(re-frame/dispatch [::evt/update-game-playing-status id :norm-pri])
           rm-self-listener #(re-frame/dispatch [::evt/update-game-playing-status id :removed])
-          player #(do [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}])]
+          ;; player #(do [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}])
+          ]
       [:div.game
        [:div.head
         [:h3 name]
@@ -246,20 +259,12 @@
         (if (empty? hi-players)
           [:p.dim "(no high priority players)"]
           [:div.players
-           (map #(vector :p.player {:key           (:id %)
-                                    :class         [(:status %)]
-                                    :on-click      (fn [] (swap! tooltip-pinned not @tooltip-pinned))
-                                    :on-mouse-over (fn [] (do (reset! tooltip-hover true) (reset! tooltip-show %)))
-                                    :on-mouse-out  (fn [] (reset! tooltip-hover false))} (player %)) hi-players)])
+           (map player hi-players)])
         [:h4 (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
         (if (empty? players)
           [:p.dim "(no potential players)"]
           [:div.players
-           (map #(vector :p.player {:key           (:id %)
-                                    :class         [(:status %)]
-                                    :on-click      (fn [] (swap! tooltip-pinned not @tooltip-pinned))
-                                    :on-mouse-over (fn [] (do (reset! tooltip-hover true) (reset! tooltip-show %)))
-                                    :on-mouse-out  (fn [] (reset! tooltip-hover false))} (player %)) players)])
+           (map player players)])
         (cond
           im-high-priority [:<>
                             [:button {:on-click add-plyr-listener} "Switch yourself to normal priority"]
@@ -299,7 +304,8 @@
           copy-listener #(re-frame/dispatch [::evt/start-copying-game {:name name :notes notes}])
           players (filter #((set (map core/name (keys players))) (:id %)) all-players)
           players (sort-by p-sort-priority players)
-          player #(do [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}])]
+          ;; player #(do [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}])
+          ]
       [:div.game
        [:div.head
         [:h3 name]]
@@ -310,20 +316,12 @@
         (if (empty? hi-players)
           [:p.dim "(no high priority players)"]
           [:div.players
-           (map #(vector :p.player {:key           (:id %)
-                                    :class         [(:status %)]
-                                    :on-click      (fn [] (swap! tooltip-pinned not @tooltip-pinned))
-                                    :on-mouse-over (fn [] (do (reset! tooltip-hover true) (reset! tooltip-show %)))
-                                    :on-mouse-out  (fn [] (reset! tooltip-hover false))} (player %)) hi-players)])
+           (map player hi-players)])
         [:h4 (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
         (if (empty? players)
           [:p.dim "(no potential players)"]
           [:div.players
-           (map #(vector :p.player {:key           (:id %)
-                                    :class         [(:status %)]
-                                    :on-click      (fn [] (swap! tooltip-pinned not @tooltip-pinned))
-                                    :on-mouse-over (fn [] (do (reset! tooltip-hover true) (reset! tooltip-show %)))
-                                    :on-mouse-out  (fn [] (reset! tooltip-hover false))} (player %)) players)])]
+           (map player players)])]
        [:div.foot
         [:button.create-lobby.point
          {:on-click copy-listener}
