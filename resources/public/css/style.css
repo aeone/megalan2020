@@ -118,6 +118,9 @@ button {
         margin-top: 7rem;
         margin-bottom: 0.5rem;
     }
+    .player-preview {
+        display: none;
+    }
 }
 
 .statuses {

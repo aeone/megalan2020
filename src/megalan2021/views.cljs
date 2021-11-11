@@ -93,34 +93,35 @@
         now @status-poke
         status-age-mins (js/Math.floor (/ (- now (:status-set me)) (* 1000 60)))
         refresh #(re-frame/dispatch [::evt/refresh-user-status])]
-    [:div.my-status
-     [:div.name
-      [:span.dim (str "you are ")]
-      [:span (str (:name me) " ")]
-      [:span.link.dim
-       {:on-click #(re-frame/dispatch [::evt/start-editing-user])}
-       "(edit info)"]
-      [:span " "]
-      [:span.link.dim
-       {:on-click #(re-frame/dispatch [::evt/log-out-as-user])}
-       "(change user)"]]
-     [:div.statuses
-      [:div.free {:class    [(when free "active")]
-                  :on-click #(re-frame/dispatch [::evt/update-player-status "free"])}
-       [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
-      [:div.soon {:class [(when soon "active")]
-                  :on-click #(re-frame/dispatch [::evt/update-player-status "soon"])}
-       [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
-      [:div.busy {:class [(when busy "active")]
-                  :on-click #(re-frame/dispatch [::evt/update-player-status "busy"])}
-       [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
-      [:div.away {:class [(when away "active")]
-                  :on-click #(re-frame/dispatch [::evt/update-player-status "away"])}
-       [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
-     [:div.status-age.dim
-      [:span (str "status set " status-age-mins " minute" (when (not= 1 status-age-mins) "s") " ago ")]
-      [:span.link {:on-click refresh}
-       "(refresh now)"]]]))
+    [:<> [:div.my-status
+          [:div.name
+           [:span.dim (str "you are ")]
+           [:span (str (:name me) " ")]
+           [:span.link.dim
+            {:on-click #(re-frame/dispatch [::evt/start-editing-user])}
+            "(edit info)"]
+           [:span " "]
+           [:span.link.dim
+            {:on-click #(re-frame/dispatch [::evt/log-out-as-user])}
+            "(change user)"]]
+          [:div.statuses
+           [:div.free {:class    [(when free "active")]
+                       :on-click #(re-frame/dispatch [::evt/update-player-status "free"])}
+            [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
+           [:div.soon {:class [(when soon "active")]
+                       :on-click #(re-frame/dispatch [::evt/update-player-status "soon"])}
+            [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
+           [:div.busy {:class [(when busy "active")]
+                       :on-click #(re-frame/dispatch [::evt/update-player-status "busy"])}
+            [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
+           [:div.away {:class [(when away "active")]
+                       :on-click #(re-frame/dispatch [::evt/update-player-status "away"])}
+            [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
+          [:div.status-age.dim
+           [:span (str "status set " status-age-mins " minute" (when (not= 1 status-age-mins) "s") " ago ")]
+           [:span.link {:on-click refresh}
+            "(refresh now)"]]]
+            [:div.player-preview {:style {:float "right" :margin-top "3.5rem"}} [player me]]]))
 
 (defn lobbies []
   (let [ls @(re-frame/subscribe [::subs/lobbies])
