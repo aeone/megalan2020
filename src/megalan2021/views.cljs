@@ -390,18 +390,21 @@
                   :placeholder "Your name, as it will be displayed to all users"
                   :width       "100%"
                   :model       create-name
-                  :on-change   #(reset! create-name %)]
+                  :on-change   #(reset! create-name %)
+                  :style {:width "100%" :box-sizing "border-box"}]
                  [re-com/input-text
                   :placeholder "Your email, for Gravatar to supply you with an avatar"
                   :width       "100%"
                   :model       create-email
-                  :on-change   #(reset! create-email %)]
+                  :on-change   #(reset! create-email %)
+                  :style {:width "100%" :box-sizing "border-box"}]
                  [re-com/input-textarea
                   :placeholder "Notes for you, e.g. your discord username, battle.net, steam, switch friend codes, etc. (supports markdown)"
                   :width       "100%"
                   :rows        10
                   :model       create-notes
-                  :on-change   #(reset! create-notes %)]
+                  :on-change   #(reset! create-notes %)
+                  :style {:width "100%" :box-sizing "border-box"}]
                  [:button {:on-click #(re-frame/dispatch [::evt/create-and-log-in-as-user {:name @create-name
                                                                                            :email @create-email
                                                                                            :notes @create-notes}])}
@@ -425,18 +428,21 @@
                   :placeholder "Your name, as it will be displayed to all users"
                   :width       "25rem"
                   :model       editing-name
-                  :on-change   #(reset! editing-name %)]
+                  :on-change   #(reset! editing-name %)
+                  :style {:width "100%" :box-sizing "border-box"}]
                  [re-com/input-text
                   :placeholder "Your email, for Gravatar to supply you with an avatar"
                   :width       "25rem"
                   :model       editing-email
-                  :on-change   #(reset! editing-email %)]
+                  :on-change   #(reset! editing-email %)
+                  :style {:width "100%" :box-sizing "border-box"}]
                  [re-com/input-textarea
                   :placeholder "Notes for you, e.g. your discord username, battle.net, steam, switch friend codes, etc. (supports markdown)"
                   :width       "25rem"
                   :rows        10
                   :model       editing-notes
-                  :on-change   #(reset! editing-notes %)]
+                  :on-change   #(reset! editing-notes %)
+                  :style {:width "100%" :box-sizing "border-box"}]
                  [:button
                   {:on-click #(re-frame/dispatch [::evt/update-user-information {:name @editing-name
                                                                                  :email @editing-email
