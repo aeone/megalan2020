@@ -479,7 +479,8 @@
                 :placeholder "Name of game"
                 :model a-name
                 :width       "100%"
-                :on-change #(reset! a-name %)]
+                :on-change #(reset! a-name %)
+                :style {:width "100%" :box-sizing "border-box"}]
       ;;  [re-com/input-text 
       ;;   :placeholder "If a PC game, name of sponsor certifying the game is Not A Virus"
       ;;   :model a-sponsor
@@ -489,7 +490,8 @@
                 :rows 10
                 :model a-notes
                 :width       "100%"
-                :on-change #(reset! a-notes %)]
+                :on-change #(reset! a-notes %)
+                :style {:width "100%" :box-sizing "border-box"}]
 
                (if game-id
                  [:button {:on-click #(re-frame/dispatch [::evt/save-game {:id game-id :name @a-name :notes @a-notes}])}
