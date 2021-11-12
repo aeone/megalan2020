@@ -197,46 +197,61 @@
   (some #(= elm %) coll))
 
 (defn games []
-  (let [gs @(re-frame/subscribe [::subs/games])
-        filter-games @(re-frame/subscribe [::subs/filter-games])
-        sort-games-by @(re-frame/subscribe [::subs/sort-games-by])
-        my-uuid @(re-frame/subscribe [::subs/current-user-id])
-        gs (cond filter-games (filter #(in? (map name (concat (keys (:hi-players %)) (keys (:players %)))) my-uuid) gs)
-                 :else gs)
-        gs (sort-by (case sort-games-by 
-                      :date (juxt (comp - :created-at) :name)
-                      :name (juxt :name :created-at)) 
-                    gs)]
-    [:div.games
-     [:div.heading
-      [:h2 "Game list"]
-      (if filter-games
-        [:span.link {:on-click #(re-frame/dispatch [::evt/filter-games false])}
-         "see all games in the game list"]
-        [:span.link {:on-click #(re-frame/dispatch [::evt/filter-games true])}
-         "see only games I'm interested in"])
-      (case sort-games-by
-        :date [:span.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :name])}
-               "sort games by name (instead of most recently created first)"]
-        :name [:span.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :date])}
-                "sort games by recently created (instead of name)"])
-      [:span.link {:on-click #(re-frame/dispatch [::evt/start-creating-game])}
-       "create a new game"]]
-     [:div.body
-      (when (= 0 (count gs)) [:p {:style {:margin-left "1rem"}} "No games are currently listed."])
-      (for [g gs]
-        ^{:key (:id g)} [game g])]]))
+  (let [gs (re-frame/subscribe [::subs/games])
+        filter-games (re-frame/subscribe [::subs/filter-games])
+        sort-games-by (re-frame/subscribe [::subs/sort-games-by])
+        game-name-filter (r/atom "")
+        my-uuid (re-frame/subscribe [::subs/current-user-id])]
+    (fn []
+      (let [gs (cond @filter-games (filter #(in? (map name (concat (keys (:hi-players %)) (keys (:players %)))) @my-uuid) @gs)
+                     :else @gs)
+            gs (if (empty? @game-name-filter)
+                 gs
+                 (filter #(string/includes? (string/lower-case (:name %)) (string/lower-case @game-name-filter)) gs))
+            _ (js/console.log [@game-name-filter gs])
+            gs (sort-by (case @sort-games-by
+                          :date (juxt (comp - :created-at) :name)
+                          :name (juxt :name :created-at))
+                        gs)]
+        [:div.games
+         [:div.heading
+          [:h2 {:style {:min-width "12rem"}} "Game list"]
+          [re-com/input-text
+           :placeholder "Filter games by name..."
+           :model game-name-filter
+           :change-on-blur? false
+           :on-change #(do (js/console.log %) (reset! game-name-filter %))
+           :style {:background-color "transparent" :color "white"}
+           :parts {:wrapper {:class "text-filter"}}]
+          ;; [:span.ml-break]
+          (if @filter-games
+            [:span.link {:on-click #(re-frame/dispatch [::evt/filter-games false])}
+             "see all games in the game list"]
+            [:span.link {:on-click #(re-frame/dispatch [::evt/filter-games true])}
+             "see only games I'm interested in"])
+          (case @sort-games-by
+            :date [:span.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :name])}
+                   "sort games by name (instead of most recently created first)"]
+            :name [:span.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :date])}
+                   "sort games by recently created (instead of name)"])
+          [:span.link {:on-click #(re-frame/dispatch [::evt/start-creating-game])}
+           "create a new game"]]
+         [:div.body
+          (when (= 0 (count gs)) [:p {:style {:margin-left "1rem"}} "No games are currently listed."])
+          (for [g gs]
+            ^{:key (:id g)} [game g])]]))))
 
 (defn player [p]
-  (let [not-seen-recently (> (- (.now js/Date) (:status-set p)) (* 8 60 60 1000))]
-    [:p.player
-     {:key           (:id p)
-      :class         [(:status p)]
-      :on-click      (fn [] (swap! tooltip-pinned not @tooltip-pinned))
-      :on-mouse-over (fn [] (reset! tooltip-hover true) (reset! tooltip-show p))
-      :on-mouse-out  (fn [] (reset! tooltip-hover false))}
-     [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email p)))
-                   :class (when not-seen-recently "seen-ages-ago")}]]))
+  (when p
+    (let [not-seen-recently (> (- (.now js/Date) (:status-set p)) (* 8 60 60 1000))]
+      [:p.player
+       {:key           (:id p)
+        :class         [(:status p)]
+        :on-click      (fn [] (swap! tooltip-pinned not @tooltip-pinned))
+        :on-mouse-over (fn [] (reset! tooltip-hover true) (reset! tooltip-show p))
+        :on-mouse-out  (fn [] (reset! tooltip-hover false))}
+       [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email p)))
+                     :class (when not-seen-recently "seen-ages-ago")}]])))
 
 (defn game [g]
   (fn [g]
