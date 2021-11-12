@@ -91,7 +91,8 @@
         busy (= (:status me) "busy")
         away (= (:status me) "away")
         now @status-poke
-        status-age-mins (js/Math.floor (/ (- now (:status-set me)) (* 1000 60)))
+        ;; _ (js/console.log [now (:status-set me) (- now (:status-set me))])
+        status-age-mins (js/Math.max (js/Math.floor (/ (- now (:status-set me)) (* 1000 60))) 0)
         refresh #(re-frame/dispatch [::evt/refresh-user-status])]
     [:<> [:div.my-status
           [:div.name
@@ -208,7 +209,7 @@
             gs (if (empty? @game-name-filter)
                  gs
                  (filter #(string/includes? (string/lower-case (:name %)) (string/lower-case @game-name-filter)) gs))
-            _ (js/console.log [@game-name-filter gs])
+            ;; _ (js/console.log [@game-name-filter gs])
             gs (sort-by (case @sort-games-by
                           :date (juxt (comp - :created-at) :name)
                           :name (juxt :name :created-at))
@@ -220,7 +221,7 @@
            :placeholder "Filter games by name..."
            :model game-name-filter
            :change-on-blur? false
-           :on-change #(do (js/console.log %) (reset! game-name-filter %))
+           :on-change #(reset! game-name-filter %)
            :style {:background-color "transparent" :color "white"}
            :parts {:wrapper {:class "text-filter"}}]
           ;; [:span.ml-break]
