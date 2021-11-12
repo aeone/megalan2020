@@ -56,6 +56,12 @@
  (fn [db]
    (get-in db [:local :filter-games])))
 
+(re-frame/reg-sub
+ ::sort-games-by
+ (fn [db]
+   (or (get-in db [:local :sort-games-by])
+       :date)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Level 3 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

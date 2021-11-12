@@ -149,6 +149,12 @@
    {:db (assoc-in db [:local :filter-games] val)}))
 
 (re-frame/reg-event-fx
+ ::evt/sort-games-by
+ [->local-store]
+ (fn [{:keys [db]} [_ val]]
+   {:db (assoc-in db [:local :sort-games-by] val)}))
+
+(re-frame/reg-event-fx
  ::evt/start-creating-game
  [->local-store]
  (fn [{:keys [db]}]

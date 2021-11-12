@@ -199,10 +199,14 @@
 (defn games []
   (let [gs @(re-frame/subscribe [::subs/games])
         filter-games @(re-frame/subscribe [::subs/filter-games])
+        sort-games-by @(re-frame/subscribe [::subs/sort-games-by])
         my-uuid @(re-frame/subscribe [::subs/current-user-id])
         gs (cond filter-games (filter #(in? (map name (concat (keys (:hi-players %)) (keys (:players %)))) my-uuid) gs)
                  :else gs)
-        gs (sort-by (juxt (comp - :created-at) :name) gs)]
+        gs (sort-by (case sort-games-by 
+                      :date (juxt (comp - :created-at) :name)
+                      :name (juxt :name :created-at)) 
+                    gs)]
     [:div.games
      [:div.heading
       [:h2 "Game list"]
@@ -211,6 +215,11 @@
          "see all games in the game list"]
         [:span.link {:on-click #(re-frame/dispatch [::evt/filter-games true])}
          "see only games I'm interested in"])
+      (case sort-games-by
+        :date [:span.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :name])}
+               "sort games by name (instead of most recently created first)"]
+        :name [:span.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :date])}
+                "sort games by recently created (instead of name)"])
       [:span.link {:on-click #(re-frame/dispatch [::evt/start-creating-game])}
        "create a new game"]]
      [:div.body
