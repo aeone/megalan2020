@@ -27,7 +27,7 @@
    (get-in db [:local :editing-game])))
 
 (re-frame/reg-sub
- ::all-players
+ ::all-players-raw
  (fn [db]
    (vals (get-in db [:fb :players]))))
 
@@ -68,13 +68,30 @@
 
 (re-frame/reg-sub
  ::all-players-dropdown
- :<- [::all-players]
+ :<- [::all-players-raw]
  (fn [all-players]
    (->> all-players
         (map #(hash-map
                :id (:id %)
                :label (:name %)
                :gravatar (str "https://www.gravatar.com/avatar/" (when (not (empty? (:gravatar-email %))) (.md5 js/window (:gravatar-email %)))))))))
+
+
+(re-frame/reg-sub
+ ::all-players
+ :<- [::all-players-raw]
+ (fn [all-players]
+   (->> all-players
+        (map #(let [player-last-online (:status-set %)
+                    now (.now js/Date)
+                    a-day (* 1000 60 60 24)
+                    a-day-ago (- now a-day)
+                    away-player (-> %
+                                    (assoc :status "away")
+                                    (assoc :status-set 0))]
+                (if (< player-last-online a-day-ago)
+                  away-player
+                  %))))))
 
 (re-frame/reg-sub
  ::current-user

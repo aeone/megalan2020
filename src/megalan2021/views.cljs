@@ -92,6 +92,7 @@
         away (= (:status me) "away")
         now @status-poke
         ;; _ (js/console.log [now (:status-set me) (- now (:status-set me))])
+        status-set-a-while-ago (= 0 (:status-set me))
         status-age-mins (js/Math.max (js/Math.floor (/ (- now (:status-set me)) (* 1000 60))) 0)
         refresh #(re-frame/dispatch [::evt/refresh-user-status])]
     [:<> [:div.my-status
@@ -119,7 +120,7 @@
                        :on-click #(re-frame/dispatch [::evt/update-player-status "away"])}
             [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
           [:div.status-age.dim
-           [:span (str "status set " status-age-mins " minute" (when (not= 1 status-age-mins) "s") " ago ")]
+           [:span (if status-set-a-while-ago "status set more than a day ago " (str "status set " status-age-mins " minute" (when (not= 1 status-age-mins) "s") " ago "))]
            [:span.link {:on-click refresh}
             "(refresh now)"]]]
             [:div.player-preview {:style {:float "right" :margin-top "3.5rem"}} [player me]]]))
@@ -363,13 +364,16 @@
                           "busy" "busy (unavailable to play)"
                           "away" "away (unavailable to play)")
             now (.now js/Date)
-            status-age-mins (js/Math.floor (/ (- now status-set) (* 1000 60)))]
+            status-age-mins (js/Math.floor (/ (- now status-set) (* 1000 60)))
+            status-set-a-while-ago (= 0 status-set)]
         [:div.ml-tooltip {:class [status]}
          (when gravatar-email
            [:img.avatar.big {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window gravatar-email))}])
          [:div.contents
           [:h3 name]
-          [:p.dim "status: " [:span.st full-status] (str " since " status-age-mins " min" (when (not= 1 status-age-mins) "s") " ago.")]
+          [:p.dim "status: " [:span.st full-status] 
+           (if status-set-a-while-ago " since more than a day ago."
+               (str " since " status-age-mins " min" (when (not= 1 status-age-mins) "s") " ago."))]
           [:div.notes [:> ReactMarkdown {:source notes}]]]])
       [:<>])))
 
