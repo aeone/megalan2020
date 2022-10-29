@@ -258,9 +258,12 @@ h3 {
     margin: 0.5rem;
     display: flex;
     flex-direction: column;
+    border: 1px solid;
+    border-color: rgba(255,255,255,0.5);
 }
-.archived {
+.archived.game {
     color: var(--text-dim);
+    border-color: #2b92be;
 }
 
 .lobby .head {
@@ -320,6 +323,7 @@ h3 {
 .game {
     max-width: 25rem;
     min-width: 15rem;
+    border-color: #3cc;
 }
 
 .game .head {
@@ -366,6 +370,7 @@ button {
     border-width: 1px;
     border-color: #3cc;
     padding: 0.5rem;
+    margin-bottom: 0;
 }
 .archived button {
     background-color: var(--alt-tone-1);
