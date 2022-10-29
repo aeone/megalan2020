@@ -332,7 +332,7 @@
           players (sort-by p-sort-priority players)
           ;; player #(do [:img.avatar {:src (str "https://www.gravatar.com/avatar/" (.md5 js/window (:gravatar-email %)))}])
           ]
-      [:div.game
+      [:div.archived.game
        [:div.head
         [:h3 name]]
        [:div.mid

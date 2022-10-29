@@ -18,6 +18,8 @@
     --yellow: #da3;
     --red: #b46;
     --away-grey: #aad;
+    --alt-tone-1: #10759f;
+    --alt-tone-2: #7428ad;
 }
 
 a {
@@ -257,6 +259,9 @@ h3 {
     display: flex;
     flex-direction: column;
 }
+.archived {
+    color: var(--text-dim);
+}
 
 .lobby .head {
     background-color: var(--bg-tone-3);
@@ -361,6 +366,11 @@ button {
     border-width: 1px;
     border-color: #3cc;
     padding: 0.5rem;
+}
+.archived button {
+    background-color: var(--alt-tone-1);
+    border-color: rgba(255,255,255,0.5);
+    /* filter: darken(50%); qq */
 }
 button:hover {
     background-color: var(--bg-tone-3);
