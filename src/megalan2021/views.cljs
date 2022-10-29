@@ -158,7 +158,7 @@
      [lobby-notes id notes]
      [:div.body
       (if (empty? players)
-        [:p "(No players in lobby)"]
+        [:p "(No players currently in lobby)"]
         [:div.players
          (map #(do ^{:key (:id %)}
                 [:div.player {:class         [(:status %)]
@@ -281,26 +281,26 @@
        [:div.mid
         [:> ReactMarkdown {:source notes}]]
        [:div.body
-        [:h4 (str "high priority players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
+        [:h4 (str "especially interested players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
         (if (empty? hi-players)
-          [:p.dim "(no high priority players)"]
+          [:p.dim "(no especially interested players yet)"]
           [:div.players
            (map player hi-players)])
-        [:h4 (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
+        [:h4 (str "interested players" (when-not (empty? players) (str " (" (count players) ")")))]
         (if (empty? players)
-          [:p.dim "(no potential players)"]
+          [:p.dim "(no interested players yet)"]
           [:div.players
            (map player players)])
         (cond
           im-high-priority [:<>
-                            [:button {:on-click add-plyr-listener} "Switch yourself to normal priority"]
+                            [:button {:on-click add-plyr-listener} "Switch yourself to 'interested'"]
                             [:button {:on-click rm-self-listener} "Remove yourself from player list"]]
           im-potential-plyr [:<>
-                             [:button {:on-click add-high-listener} "Switch yourself to high priority"]
+                             [:button {:on-click add-high-listener} "Switch yourself to 'especially interested'"]
                              [:button {:on-click rm-self-listener} "Remove yourself from player list"]]
           :else [:<>
-                 [:button {:on-click add-high-listener} "Add yourself as high priority player"]
-                 [:button {:on-click add-plyr-listener} "Add yourself as potential player"]])]
+                 [:button {:on-click add-high-listener} "Add yourself as especially interested player"]
+                 [:button {:on-click add-plyr-listener} "Add yourself as interested player"]])]
        [:div.foot
         [:button.create-lobby.point
          {:on-click listener}
@@ -338,14 +338,14 @@
        [:div.mid
         [:> ReactMarkdown {:source notes}]]
        [:div.body
-        [:h4 (str "high priority players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
+        [:h4 (str "especially interested players" (when-not (empty? hi-players) (str " (" (count hi-players) ")")))]
         (if (empty? hi-players)
-          [:p.dim "(no high priority players)"]
+          [:p.dim "(no especially interested players yet)"]
           [:div.players
            (map player hi-players)])
-        [:h4 (str "potential players" (when-not (empty? players) (str " (" (count players) ")")))]
+        [:h4 (str "interested players" (when-not (empty? players) (str " (" (count players) ")")))]
         (if (empty? players)
-          [:p.dim "(no potential players)"]
+          [:p.dim "(no interested players yet)"]
           [:div.players
            (map player players)])]
        [:div.foot
