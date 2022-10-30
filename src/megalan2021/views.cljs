@@ -99,29 +99,29 @@
           [:div.name
            [:span.dim (str "you are ")]
            [:span (str (:name me) " ")]
-           [:span.link.dim
+           [:a.link.dim
             {:on-click #(re-frame/dispatch [::evt/start-editing-user])}
             "(edit info)"]
            [:span " "]
-           [:span.link.dim
+           [:a.link.dim
             {:on-click #(re-frame/dispatch [::evt/log-out-as-user])}
             "(change user)"]]
           [:div.statuses
-           [:div.free {:class    [(when free "active")]
+           [:a.free {:class    [(when free "active")]
                        :on-click #(re-frame/dispatch [::evt/update-player-status "free"])}
             [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
-           [:div.soon {:class [(when soon "active")]
+           [:a.soon {:class [(when soon "active")]
                        :on-click #(re-frame/dispatch [::evt/update-player-status "soon"])}
             [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
-           [:div.busy {:class [(when busy "active")]
+           [:a.busy {:class [(when busy "active")]
                        :on-click #(re-frame/dispatch [::evt/update-player-status "busy"])}
             [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
-           [:div.away {:class [(when away "active")]
+           [:a.away {:class [(when away "active")]
                        :on-click #(re-frame/dispatch [::evt/update-player-status "away"])}
             [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
           [:div.status-age.dim
            [:span (if status-set-a-while-ago "status set more than a day ago " (str "status set " status-age-mins " minute" (when (not= 1 status-age-mins) "s") " ago "))]
-           [:span.link {:on-click refresh}
+           [:a.link.dim {:on-click refresh}
             "(refresh now)"]]]
             [:div.player-preview {:style {:float "right" :margin-top "3.5rem"}} [player me]]]))
 
@@ -227,16 +227,16 @@
            :parts {:wrapper {:class "text-filter"}}]
           ;; [:span.ml-break]
           (if @filter-games
-            [:span.link {:on-click #(re-frame/dispatch [::evt/filter-games false])}
+            [:a.link {:on-click #(re-frame/dispatch [::evt/filter-games false])}
              "see all games in the game list"]
-            [:span.link {:on-click #(re-frame/dispatch [::evt/filter-games true])}
+            [:a.link {:on-click #(re-frame/dispatch [::evt/filter-games true])}
              "see only games I'm interested in"])
           (case @sort-games-by
-            :date [:span.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :name])}
+            :date [:a.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :name])}
                    "sort games by name (instead of most recently created first)"]
-            :name [:span.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :date])}
+            :name [:a.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :date])}
                    "sort games by recently created (instead of name)"])
-          [:span.link {:on-click #(re-frame/dispatch [::evt/start-creating-game])}
+          [:a.link {:on-click #(re-frame/dispatch [::evt/start-creating-game])}
            "create a new game"]]
          [:div.body
           (when (= 0 (count gs)) [:p {:style {:margin-left "1rem"}} "No games are currently listed."])
@@ -312,9 +312,7 @@
         filter-games @(re-frame/subscribe [::subs/filter-games])
         my-uuid @(re-frame/subscribe [::subs/current-user-id])
         gs (cond filter-games (filter #(in? (map name (concat (keys (:hi-players %)) (keys (:players %)))) my-uuid) gs)
-                 :else gs)
-        ;; gs (sort-by (juxt (comp - :created-at) :name) gs)
-        ]
+                 :else gs)]
     [:div.games
      [:div.heading
       [:h2 "Archived games (games from previous years)"]]
