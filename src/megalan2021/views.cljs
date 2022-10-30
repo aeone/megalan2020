@@ -313,7 +313,8 @@
         my-uuid @(re-frame/subscribe [::subs/current-user-id])
         gs (cond filter-games (filter #(in? (map name (concat (keys (:hi-players %)) (keys (:players %)))) my-uuid) gs)
                  :else gs)
-        gs (sort-by (juxt (comp - :created-at) :name) gs)]
+        ;; gs (sort-by (juxt (comp - :created-at) :name) gs)
+        ]
     [:div.games
      [:div.heading
       [:h2 "Archived games (games from previous years)"]]

@@ -42,9 +42,14 @@
    (vals (get-in db [:fb :games]))))
 
 (re-frame/reg-sub
- ::archived-games
+ ::archived-games-2021
  (fn [db]
-   (vals (get-in db [:fb :archived-games]))))
+   (vals (get-in db [:fb :archived-games-2021]))))
+
+(re-frame/reg-sub
+ ::archived-games-2020
+ (fn [db]
+   (vals (get-in db [:fb :archived-games-2020]))))
 
 (re-frame/reg-sub
  ::lobbies
@@ -65,6 +70,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Level 3 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(re-frame/reg-sub
+ ::archived-games
+ :<- [::archived-games-2020]
+ :<- [::archived-games-2021]
+ (fn [[games2020 games2021]]
+   (let [games2021-names (set (map :name games2021))
+         games2020-nonoverlap (filter #(not (games2021-names (:name %))) games2020)
+         _ (.log js/console {:games2020  games2020
+                             :games2021  games2021
+                             :games2021-names  games2021-names
+                             :games2020-nonoverlap  games2020-nonoverlap})]
+     (->> (concat games2021 games2020-nonoverlap)
+          (filter some?)
+          (sort-by :name)))))
 
 (re-frame/reg-sub
  ::all-players-dropdown
