@@ -107,16 +107,16 @@
             {:on-click #(re-frame/dispatch [::evt/log-out-as-user])}
             "(change user)"]]
           [:div.statuses
-           [:a.free {:class    [(when free "active")]
+           [:a.action.free {:class    [(when free "active")]
                        :on-click #(re-frame/dispatch [::evt/update-player-status "free"])}
             [:span.name "free"] [:br] [:span.desc "I'm available for games"]]
-           [:a.soon {:class [(when soon "active")]
+           [:a.action.soon {:class [(when soon "active")]
                        :on-click #(re-frame/dispatch [::evt/update-player-status "soon"])}
             [:span.name "soon"] [:br] [:span.desc "I'll be available soon"]]
-           [:a.busy {:class [(when busy "active")]
+           [:a.action.busy {:class [(when busy "active")]
                        :on-click #(re-frame/dispatch [::evt/update-player-status "busy"])}
             [:span.name "busy"] [:br] [:span.desc "Currently playing something"]]
-           [:a.away {:class [(when away "active")]
+           [:a.action.away {:class [(when away "active")]
                        :on-click #(re-frame/dispatch [::evt/update-player-status "away"])}
             [:span.name "away"] [:br] [:span.desc "Not doing MegaLAN"]]]
           [:div.status-age.dim
@@ -227,16 +227,16 @@
            :parts {:wrapper {:class "text-filter"}}]
           ;; [:span.ml-break]
           (if @filter-games
-            [:a.link {:on-click #(re-frame/dispatch [::evt/filter-games false])}
+            [:a.action.link {:on-click #(re-frame/dispatch [::evt/filter-games false])}
              "see all games in the game list"]
-            [:a.link {:on-click #(re-frame/dispatch [::evt/filter-games true])}
+            [:a.action.link {:on-click #(re-frame/dispatch [::evt/filter-games true])}
              "see only games I'm interested in"])
           (case @sort-games-by
-            :date [:a.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :name])}
+            :date [:a.action.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :name])}
                    "sort games by name (instead of most recently created first)"]
-            :name [:a.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :date])}
+            :name [:a.action.link {:on-click #(re-frame/dispatch [::evt/sort-games-by :date])}
                    "sort games by recently created (instead of name)"])
-          [:a.link {:on-click #(re-frame/dispatch [::evt/start-creating-game])}
+          [:a.action.link {:on-click #(re-frame/dispatch [::evt/start-creating-game])}
            "create a new game"]]
          [:div.body
           (when (= 0 (count gs)) [:p {:style {:margin-left "1rem"}} "No games are currently listed."])
