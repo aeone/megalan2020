@@ -36,25 +36,28 @@
  ::evt/fb-update-archived-games-2020
  (fn [db [_ data]]
    (when config/debug? (println "Updating archived games 2020"))
+   (let [_ (.log js/console ["Updating archived games 2020", data])]
    (-> db
        (dissoc :loading)
-       (assoc-in [:fb :archived-games-2020] data))))
+       (assoc-in [:fb :archived-games-2020] data)))))
 
 (re-frame/reg-event-db
  ::evt/fb-update-archived-games-2021
  (fn [db [_ data]]
    (when config/debug? (println "Updating archived games 2021"))
+   (let [_ (.log js/console ["Updating archived games 2021", data])]
    (-> db
        (dissoc :loading)
-       (assoc-in [:fb :archived-games-2021] data))))
+       (assoc-in [:fb :archived-games-2021] data)))))
 
 (re-frame/reg-event-db
  ::evt/fb-update-archived-games-2022
  (fn [db [_ data]]
    (when config/debug? (println "Updating archived games 2022"))
+   (let [_ (.log js/console ["Updating archived games 2022", data])]
    (-> db
        (dissoc :loading)
-       (assoc-in [:fb :archived-games-2022] data))))
+       (assoc-in [:fb :archived-games-2022] data)))))
 
 (re-frame/reg-event-db
  ::evt/fb-update-players
