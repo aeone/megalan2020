@@ -42,6 +42,11 @@
    (vals (get-in db [:fb :games]))))
 
 (re-frame/reg-sub
+ ::archived-games-2022
+ (fn [db]
+   (vals (get-in db [:fb :archived-games-2022]))))
+
+(re-frame/reg-sub
  ::archived-games-2021
  (fn [db]
    (vals (get-in db [:fb :archived-games-2021]))))
@@ -75,14 +80,20 @@
  ::archived-games
  :<- [::archived-games-2020]
  :<- [::archived-games-2021]
- (fn [[games2020 games2021]]
-   (let [games2021-names (set (map :name games2021))
-         games2020-nonoverlap (filter #(not (games2021-names (:name %))) games2020)
+ :<- [::archived-games-2022]
+ (fn [[games2020 games2021 games2022]]
+   (let [games2022-names (set (map :name games2022))
+         games2021-names (set (map :name games2021))
+
+         games2021-nonoverlap (filter #(not (games2022-names (:name %))) games2021)
+         games2020-nonoverlap (filter #(not (or (games2022-names (:name %)) 
+                                                (games2021-names (:name %)))) games2020)
          _ (.log js/console {:games2020  games2020
                              :games2021  games2021
-                             :games2021-names  games2021-names
+                             :games2022  games2022
+                             :games2021-nonoverlap  games2021-nonoverlap
                              :games2020-nonoverlap  games2020-nonoverlap})]
-     (->> (concat games2021 games2020-nonoverlap)
+     (->> (concat games2022 games2021-nonoverlap games2020-nonoverlap)
           (filter some?)
           (sort-by :name)))))
 

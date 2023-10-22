@@ -39,6 +39,7 @@
    (-> db
        (dissoc :loading)
        (assoc-in [:fb :archived-games-2020] data))))
+
 (re-frame/reg-event-db
  ::evt/fb-update-archived-games-2021
  (fn [db [_ data]]
@@ -46,6 +47,14 @@
    (-> db
        (dissoc :loading)
        (assoc-in [:fb :archived-games-2021] data))))
+
+(re-frame/reg-event-db
+ ::evt/fb-update-archived-games-2022
+ (fn [db [_ data]]
+   (when config/debug? (println "Updating archived games 2022"))
+   (-> db
+       (dissoc :loading)
+       (assoc-in [:fb :archived-games-2022] data))))
 
 (re-frame/reg-event-db
  ::evt/fb-update-players

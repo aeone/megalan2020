@@ -41,5 +41,6 @@
     (register ["games"] ::evt/fb-update-games)
     (register ["archived-games-2020"] ::evt/fb-update-archived-games-2020)
     (register ["archived-games-2021"] ::evt/fb-update-archived-games-2021)
+    (register ["archived-games-2022"] ::evt/fb-update-archived-games-2022)
     (register ["players"] ::evt/fb-update-players)
     (register ["lobbies"] ::evt/fb-update-lobbies)))
