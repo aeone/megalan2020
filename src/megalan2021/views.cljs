@@ -154,7 +154,7 @@
     [:div.lobby
      [:div.head
       [:h3 "Lobby: " game]
-      [:i.fal.fa-times.fa-2x.close-icon.point.link
+      [:i.fa-solid.fa-xmark.fa-2x.close-icon.point.link
        {:on-click kill-listener}]]
      [lobby-notes id notes]
      [:div.body
@@ -189,7 +189,7 @@
            "Save"]]
          [:<>
           [:span (if (empty? notes) "(No notes entered)" [:> ReactMarkdown {:source notes}])]
-          [:i.fal.fa-edit.fa-lg.edit-icon.point.link {:on-click
+          [:i.fa-regular.fa-pen-to-square.edit-icon.point.link {:on-click
                                                       #(do (reset! a-notes notes)
                                                            (reset! a-notes-active true))}]])])))
 
@@ -278,7 +278,7 @@
       [:div.game
        [:div.head
         [:h3 name]
-        [:i.fal.fa-edit.fa-lg.edit-icon.point.link {:on-click #(re-frame/dispatch [::evt/start-editing-game id])}]]
+        [:i.fa-regular.fa-pen-to-square.edit-icon.point.link {:on-click #(re-frame/dispatch [::evt/start-editing-game id])}]]
        [:div.mid
         [:> ReactMarkdown {:source notes}]]
        [:div.body
