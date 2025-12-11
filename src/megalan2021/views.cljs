@@ -37,18 +37,9 @@
 ;;      :label (str "Hello from " @name". Git version: " config/version ".")
 ;;      :level :level1]))
 
-;; Version strings returned by shadow-git-inject when it cannot determine the version.
-;; See https://github.com/day8/shadow-git-inject for details:
-;; - "git-version-tag-not-found": No matching version tag found in git history
-;; - "git-command-not-found": Git executable not found in PATH
-;; - "unknown": Default value when shadow-git-inject hasn't run
-(def ^:private fallback-versions #{"git-version-tag-not-found" "git-command-not-found" "unknown"})
-
 (defn footer-version []
-  (let [display-version (if (contains? fallback-versions config/version)
-                           "development build"
-                           config/version)]
-    [:div "Git version: " display-version]))
+  [:div "Git version: " config/version])
+
 
 
 (def status-poke (r/atom (.now js/Date)))

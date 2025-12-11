@@ -242,15 +242,4 @@ The `resources/public/js/compiled` directory is created, containing the compiled
 
 ## Versioning
 
-This project uses [`shadow-git-inject`](https://github.com/day8/shadow-git-inject) to automatically inject the git version into the application at build time. The version is displayed at the bottom of the page.
-
-To create a new version:
-
-```sh
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-The version number follows [semantic versioning](https://semver.org/) (e.g., `v1.0.0`, `v1.2.3`).
-
-If no tags exist in the repository, the application will display "development build" instead.
+The git commit hash is automatically injected into the application during GitHub Actions builds and is displayed at the bottom of the page. When building locally, the version will display as "dev".
