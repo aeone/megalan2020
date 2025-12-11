@@ -69,6 +69,15 @@
        (assoc-in [:fb :archived-games-2023] data)))))
 
 (re-frame/reg-event-db
+ ::evt/fb-update-archived-games-2024
+ (fn [db [_ data]]
+   (when config/debug? (println "Updating archived games 2024"))
+   (let [_ (.log js/console ["Updating archived games 2024", data])]
+   (-> db
+       (dissoc :loading)
+       (assoc-in [:fb :archived-games-2024] data)))))
+
+(re-frame/reg-event-db
  ::evt/fb-update-players
  (fn [db [_ data]] 
    (when config/debug? (println "Updating players"))
