@@ -42,6 +42,11 @@
    (vals (get-in db [:fb :games]))))
 
 (re-frame/reg-sub
+ ::archived-games-2024
+ (fn [db]
+   (vals (get-in db [:fb :archived-games-2024]))))
+
+(re-frame/reg-sub
  ::archived-games-2023
  (fn [db]
    (vals (get-in db [:fb :archived-games-2023]))))
@@ -87,26 +92,34 @@
  :<- [::archived-games-2021]
  :<- [::archived-games-2022]
  :<- [::archived-games-2023]
- (fn [[games2020 games2021 games2022 games2023]]
-   (let [games2023-names (set (map :name games2023))
+ :<- [::archived-games-2024]
+ (fn [[games2020 games2021 games2022 games2023 games2024]]
+   (let [games2024-names (set (map :name games2024))
+         games2023-names (set (map :name games2023))
          games2022-names (set (map :name games2022))
          games2021-names (set (map :name games2021))
 
-         games2022-nonoverlap (filter #(not (games2023-names (:name %))) games2022)
-         games2021-nonoverlap (filter #(not (or (games2023-names (:name %)) 
+         games2023-nonoverlap (filter #(not (games2024-names (:name %))) games2023)
+         games2022-nonoverlap (filter #(not (or (games2024-names (:name %))
+                                                (games2023-names (:name %)))) games2022)
+         games2021-nonoverlap (filter #(not (or (games2024-names (:name %))
+                                                (games2023-names (:name %)) 
                                                 (games2022-names (:name %)))) games2021)
-         games2020-nonoverlap (filter #(not (or (games2023-names (:name %)) 
+         games2020-nonoverlap (filter #(not (or (games2024-names (:name %))
+                                                (games2023-names (:name %)) 
                                                 (games2022-names (:name %)) 
                                                 (games2021-names (:name %)))) games2020)
          _ (.log js/console {:games2020  games2020
                              :games2021  games2021
                              :games2022  games2022
                              :games2023  games2023
+                             :games2024  games2024
+                             :games2023-nonoverlap  games2023-nonoverlap
                              :games2022-nonoverlap  games2022-nonoverlap
                              :games2021-nonoverlap  games2021-nonoverlap
                              :games2020-nonoverlap  games2020-nonoverlap
                              })]
-     (->> (concat games2023 games2022-nonoverlap games2021-nonoverlap games2020-nonoverlap)
+     (->> (concat games2024 games2023-nonoverlap games2022-nonoverlap games2021-nonoverlap games2020-nonoverlap)
           (filter some?)
           (sort-by :name)))))
 
