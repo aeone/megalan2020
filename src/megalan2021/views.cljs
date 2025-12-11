@@ -37,8 +37,13 @@
 ;;      :label (str "Hello from " @name". Git version: " config/version ".")
 ;;      :level :level1]))
 
-(defn footer-version [] 
-  [:div "Git version: " config/version])
+(defn footer-version []
+  (let [display-version (if (or (= config/version "git-version-tag-not-found")
+                                 (= config/version "git-command-not-found")
+                                 (= config/version "unknown"))
+                           "development build"
+                           config/version)]
+    [:div "Git version: " display-version]))
 
 
 (def status-poke (r/atom (.now js/Date)))
