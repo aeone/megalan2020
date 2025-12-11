@@ -37,10 +37,10 @@
 ;;      :label (str "Hello from " @name". Git version: " config/version ".")
 ;;      :level :level1]))
 
+(def ^:private fallback-versions #{"git-version-tag-not-found" "git-command-not-found" "unknown"})
+
 (defn footer-version []
-  (let [display-version (if (or (= config/version "git-version-tag-not-found")
-                                 (= config/version "git-command-not-found")
-                                 (= config/version "unknown"))
+  (let [display-version (if (contains? fallback-versions config/version)
                            "development build"
                            config/version)]
     [:div "Git version: " display-version]))
