@@ -37,8 +37,9 @@
 ;;      :label (str "Hello from " @name". Git version: " config/version ".")
 ;;      :level :level1]))
 
-(defn footer-version [] 
+(defn footer-version []
   [:div "Git version: " config/version])
+
 
 
 (def status-poke (r/atom (.now js/Date)))

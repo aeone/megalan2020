@@ -239,3 +239,7 @@ Please be patient; it may take over 15 seconds to see any output, and over 30 se
 
 The `resources/public/js/compiled` directory is created, containing the compiled `app.js` and
 `manifest.edn` files.
+
+## Versioning
+
+The git commit hash is automatically injected into the application during GitHub Actions builds and is displayed at the bottom of the page. When building locally, the version will display as "dev".
